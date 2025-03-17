@@ -9,7 +9,17 @@ const Chatbot = () => {
 
     // Function to send message to chatbot API
     const sendMessage = async (message) => {
-        const token = localStorage.getItem("token");
+        let token = localStorage.getItem("token");
+    
+        // ✅ If token is expired, refresh it before making the request
+        if (isTokenExpired(token)) {
+            token = await refreshToken();
+            if (!token) {
+                alert("Session expired. Please log in again.");
+                return;
+            }
+        }
+    
         if (!message.trim()) return;
     
         const newMessages = [...messages, { text: message, sender: "user" }];
@@ -20,7 +30,7 @@ const Chatbot = () => {
             const response = await axios.post(
                 "http://localhost:5000/api/chatbot",
                 { userMessage: message, session },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } } // ✅ Fixed: Pass token correctly
             );
     
             const botMessage = response.data.response;
@@ -37,6 +47,7 @@ const Chatbot = () => {
             setMessages([...newMessages, { text: "Error connecting to chatbot.", sender: "bot" }]);
         }
     };
+    
 
     const openRazorpayCheckout = (paymentData) => {
         const options = {

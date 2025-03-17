@@ -88,20 +88,26 @@ exports.verifyPayment = async (req, res) => {
 
     // 🔹 Store Ticket
     console.log("📌 Booking Ticket...");
-    const ticket = new Ticket({
-      userId,
-      museumName,
-      date,
-      price,
-      paymentId: razorpay_payment_id,
-      status: "booked",
-      visitors,
-    });
+    let savedTicket; // ✅ Declare savedTicket outside try block
 
-    const savedTicket = await ticket.save();
-    console.log("✅ Ticket Created:", savedTicket);
+    try {
+      const ticket = new Ticket({
+        userId,
+        museumName,
+        date,
+        price,
+        paymentId: razorpay_payment_id,
+        status: "booked",
+        visitors,
+      });
 
-    // 🔹 Update Analytics
+      savedTicket = await ticket.save(); // ✅ Assign saved ticket to the variable
+      console.log("✅ Ticket Created & Saved in DB:", savedTicket);
+    } catch (error) {
+      console.error("❌ Error Saving Ticket:", error);
+      return res.status(500).json({ message: "Failed to save ticket" });
+    }
+
     // 🔹 Update Analytics
     console.log("📊 Updating Analytics...");
 
@@ -113,7 +119,7 @@ exports.verifyPayment = async (req, res) => {
         totalRevenue: 0,
         ticketBookings: 0,
         chatbotQueries: 0,
-        museumBookings: {} 
+        museumBookings: {}
       });
     }
 
@@ -140,13 +146,14 @@ exports.verifyPayment = async (req, res) => {
 
     console.log(`✅ Analytics Updated: ${analytics.totalBookings} bookings, ₹${analytics.totalRevenue} revenue`);
     console.log(`🏛️ Museum Bookings Updated:`, analytics.museumBookings);
-    
+
     res.status(200).json({ message: "Payment successful & Ticket booked", paymentId: razorpay_payment_id, ticket: savedTicket });
   } catch (error) {
     console.error("❌ Payment verification error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 

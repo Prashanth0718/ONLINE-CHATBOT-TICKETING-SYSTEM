@@ -3,6 +3,7 @@ const Analytics = require("../models/Analytics");
 const Payment = require("../models/Payment");
 
 const createTicket = async (req, res) => {
+  console.log("🔍 Received Payment Data:", req.body);
   try {
     const { museumName, date, price, paymentId } = req.body;
     const userId = req.user.id;
@@ -22,7 +23,7 @@ const createTicket = async (req, res) => {
     // ✅ Create and save ticket
     const ticket = new Ticket({ userId, museumName, date, price, status: "booked" });
     await ticket.save();
-
+    console.log("✅ Ticket saved in MongoDB:", ticket);
     // ✅ Update Analytics
     const analytics = await Analytics.findOneAndUpdate(
       {},
