@@ -1,11 +1,13 @@
 const Ticket = require("../models/Ticket");
 const Analytics = require("../models/Analytics");
 const Payment = require("../models/Payment");
+//const Ticket = mongoose.model("Ticket", ticketSchema, "tickets");
 
 const createTicket = async (req, res) => {
   console.log("🔍 Received Payment Data:", req.body);
   try {
-    const { museumName, date, price, paymentId } = req.body;
+    const { museumName, date: selectedDate, price, paymentId } = req.body;
+    console.log("📆 Received Date:", selectedDate);
     const userId = req.user.id;
 
     // ✅ Ensure payment is verified
@@ -21,9 +23,26 @@ const createTicket = async (req, res) => {
     }
 
     // ✅ Create and save ticket
-    const ticket = new Ticket({ userId, museumName, date, price, status: "booked" });
-    await ticket.save();
+    // Convert date to YYYY-MM-DD format
+    const formattedDate = new Date(date).toISOString().split("T")[0];
+
+    const ticket = new Ticket({
+      userId,
+      museumName,
+      date: formattedDate,  // ✅ Ensure correct format
+      price,
+      paymentId: razorpay_payment_id,
+      status: "booked",
+      visitors,
+    });
+
+    
+    
+    const savedTicket = await ticket.save();
     console.log("✅ Ticket saved in MongoDB:", ticket);
+    if (!savedTicket) {
+      return res.status(500).json({ message: "Ticket saving failed" });
+  }
     // ✅ Update Analytics
     const analytics = await Analytics.findOneAndUpdate(
       {},

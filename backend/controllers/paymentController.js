@@ -48,7 +48,9 @@ exports.verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, museumName, date, price, visitors } = req.body;
 
+    
     console.log("🔍 Received Payment Data:", req.body); // ✅ Debug log
+    console.log("🔍 Payment API: Date Before Processing:", date);
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       console.log("❌ Missing fields:", { razorpay_order_id, razorpay_payment_id, razorpay_signature });

@@ -84,9 +84,9 @@ const BookTicket = () => {
             required
           >
             <option value="">Select a Museum</option>
-            <option value="Louvre">Louvre Museum ($20)</option>
-            <option value="British">British Museum ($15)</option>
-            <option value="Metropolitan">Metropolitan Museum ($18)</option>
+            <option value="Louvre">Louvre Museum (₹20)</option>
+            <option value="British">British Museum (₹15)</option>
+            <option value="Metropolitan">Metropolitan Museum (₹18)</option>
           </select>
           <input
             type="date"

@@ -128,7 +128,7 @@ exports.chatbotHandler = async (req, res) => {
         "http://localhost:5000/api/tickets/create",
         {
           museumName: session.selectedMuseum,
-          date: session.selectedDate,
+          date: new Date(session.selectedDate).toISOString().split("T")[0], // Fix date format
           price: session.numTickets * 20,
           paymentId: paymentId,
         },
@@ -136,6 +136,7 @@ exports.chatbotHandler = async (req, res) => {
           headers: { Authorization: userToken },
         }
       );
+      
 
       console.log("✅ Ticket API Response:", ticketResponse.data);
 

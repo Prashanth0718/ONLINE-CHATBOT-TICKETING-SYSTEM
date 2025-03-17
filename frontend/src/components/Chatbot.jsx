@@ -59,27 +59,31 @@ const Chatbot = () => {
             order_id: paymentData.orderId,
             handler: async function (response) {
                 console.log("✅ Payment Successful:", response);
-    
+                
                 // ✅ Send payment verification request to backend
                 try {
+                    console.log("📆 Frontend Sending Date:", session.selectedDate || "❌ No date found!");
                     const verifyResponse = await axios.post(
                         "http://localhost:5000/api/payment/verify",
                         {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
-    
-                            // ✅ Ticket details (from chatbot session)
+                    
+                            // ✅ Use `session.selectedDate`
                             museumName: session.selectedMuseum,
-                            date: new Date().toISOString().split("T")[0], // Today's date
-                            price: paymentData.amount / 100, // Convert from paise to INR
+                            date: session.selectedDate || new Date().toISOString().split("T")[0], // Default to today if missing
+                            price: paymentData.amount / 100,
                             visitors: session.numTickets,
                         },
                         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                     );
+                    
     
                     if (verifyResponse.data.message === "Payment successful & Ticket booked") {
-                        alert("✅ Ticket successfully booked!");
+                        setTimeout(() => {
+                            alert("✅ Ticket successfully booked!");
+                        }, 500); // Delay the alert by 500ms                        
                     } else {
                         alert("❌ Payment verification failed.");
                     }

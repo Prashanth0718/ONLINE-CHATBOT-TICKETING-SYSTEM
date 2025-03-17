@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { format } from "date-fns";
 
 const MyTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -24,8 +25,7 @@ const MyTickets = () => {
   }, [token]);
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return format(new Date(dateString), "MM/dd/yyyy"); // Always MM/DD/YYYY format
   };
 
   const downloadTicket = (ticket) => {
@@ -78,7 +78,7 @@ const MyTickets = () => {
           {tickets.map((ticket) => (
             <div key={ticket._id} className="bg-white shadow-md p-4 rounded-lg border">
               <h2 className="text-lg font-semibold">Museum: {ticket.museumName}</h2>
-              <p>Date: {formatDate(ticket.date)}</p>
+              <p>Date: {format(new Date(ticket.date), "MM/dd/yyyy")}</p>
               <p>Price: ${ticket.price}</p>
               <p>Status: {ticket.status}</p>
 

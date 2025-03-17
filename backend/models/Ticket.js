@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const TicketSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   museumName: { type: String, required: true },
-  date: { type: String, required: true },
+  date: { type: Date, required: true },
   price: { type: Number, required: true },
   paymentId: { type: String, required: true, unique: true },
   status: { type: String, enum: ["booked", "cancelled"], default: "booked" },
