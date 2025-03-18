@@ -2,6 +2,8 @@ const express = require("express");
 const { authMiddleware } = require("../middleware/authMiddleware");
 const paymentController = require("../controllers/paymentController"); 
 const Payment = require("../models/Payment"); 
+const { refundPayment } = require('../controllers/paymentController');
+
 const Ticket = require("../models/Ticket");
 
 const router = express.Router();
@@ -9,6 +11,8 @@ const router = express.Router();
 // ✅ Define routes properly with authentication
 router.post("/create-order", authMiddleware, paymentController.createOrder);  
 router.post("/verify", authMiddleware, paymentController.verifyPayment);      
+
+router.post('/refund/:ticketId', refundPayment);
 
 // ✅ Fetch all payments (for testing)
 router.get("/all-payments", authMiddleware, async (req, res) => {

@@ -5,10 +5,18 @@ import { format } from "date-fns";
 const MyTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
-
+  
   useEffect(() => {
     const fetchTickets = async () => {
+      const token = localStorage.getItem("token");
+      console.log("🔑 Stored Token:", token);
+
+      if (!token) {
+        console.error("❌ No token found. User may be logged out.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await axios.get("http://localhost:5000/api/tickets/my-tickets", {
           headers: { Authorization: `Bearer ${token}` },
@@ -22,7 +30,7 @@ const MyTickets = () => {
     };
 
     fetchTickets();
-  }, [token]);
+  }, []); // ✅ Only runs on mount (no `token` dependency)
 
   const formatDate = (dateString) => {
     return format(new Date(dateString), "MM/dd/yyyy"); // Always MM/DD/YYYY format
@@ -48,20 +56,37 @@ const MyTickets = () => {
     document.body.removeChild(link);
   };
 
-  const cancelTicket = async (ticketId) => {
+  const cancelTicket = async (ticketId, token) => {
     const confirmCancel = window.confirm("Are you sure you want to cancel this ticket?");
     if (!confirmCancel) return;
 
-    try {
-      await axios.delete(`http://localhost:5000/api/tickets/cancel/${ticketId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    console.log("🚀 Sending Token:", token); // Debugging line
 
-      setTickets((prevTickets) => prevTickets.filter((ticket) => ticket._id !== ticketId));
-      alert("Ticket canceled successfully!");
+    if (!token) {
+      alert("You are not logged in. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/tickets/cancel/${ticketId}`,
+        {}, // Empty body (if needed)
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("✅ Ticket cancellation response:", response.data);
+
+      // ✅ Update ticket status to "canceled" instead of removing it
+      setTickets((prevTickets) =>
+        prevTickets.map((ticket) =>
+          ticket._id === ticketId ? { ...ticket, status: "canceled" } : ticket
+        )
+      );
+
+      alert("✅ Ticket canceled successfully! Refund is being processed.");
     } catch (error) {
-      console.error("❌ Error canceling ticket:", error);
-      alert("Failed to cancel ticket.");
+      console.error("❌ Error canceling ticket:", error.response?.data || error.message);
+      alert("⚠️ Failed to cancel ticket.");
     }
   };
 
@@ -91,10 +116,11 @@ const MyTickets = () => {
                 </button>
 
                 <button
-                  onClick={() => cancelTicket(ticket._id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+                  onClick={() => cancelTicket(ticket._id, localStorage.getItem("token"))} // ✅ Pass token here
+                  disabled={ticket.status === "canceled"}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition disabled:bg-gray-400"
                 >
-                  ❌ Cancel
+                  {ticket.status === "canceled" ? "🚫 Canceled" : "❌ Cancel"}
                 </button>
               </div>
             </div>

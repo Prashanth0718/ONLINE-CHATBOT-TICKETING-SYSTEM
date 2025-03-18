@@ -6,7 +6,7 @@ const TicketSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   price: { type: Number, required: true },
   paymentId: { type: String, required: true, unique: true },
-  status: { type: String, enum: ["booked", "cancelled"], default: "booked" },
+  status: { type: String, enum: ['booked', 'used', 'canceled'], default: "booked" },
   visitors: { type: Number, required: true } // 🔴 This is missing in the request
 }, { timestamps: true });
 

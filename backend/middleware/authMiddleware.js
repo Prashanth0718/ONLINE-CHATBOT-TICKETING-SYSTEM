@@ -4,7 +4,8 @@ const User = require("../models/User");
 // Middleware to protect routes (check if user is authenticated)
 const authMiddleware = async (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1]; // Extract token
-  console.log("🔍 Received Token:", token); // Debugging token
+  //console.log("🔍 Received Token:", token);
+  console.log("🔍 Received Token:", req.headers.authorization);
 
   if (!token) {
     console.error("🚨 No token provided.");

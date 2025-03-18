@@ -156,6 +156,36 @@ exports.verifyPayment = async (req, res) => {
   }
 };
 
+exports.refundPayment = async (req, res) => {
+  try {
+      const { ticketId } = req.params;
 
+      // Find the ticket
+      const ticket = await Ticket.findById(ticketId);
+      if (!ticket) {
+          return res.status(404).json({ message: 'Ticket not found' });
+      }
+
+      // Prevent duplicate refund requests
+      if (ticket.status === 'canceled') {
+          return res.status(400).json({ message: 'Ticket is already canceled and refunded' });
+      }
+
+      // Initiate refund
+      const refund = await razorpay.payments.refund(ticket.paymentId);
+
+      // Update ticket status
+      ticket.status = 'canceled';
+      await ticket.save();
+
+      res.status(200).json({
+          message: 'Refund processed successfully',
+          refund
+      });
+  } catch (error) {
+      console.error('Refund Error:', error);
+      res.status(500).json({ message: 'Refund failed', error: error.message });
+  }
+};
 
 

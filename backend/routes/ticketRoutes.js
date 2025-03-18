@@ -11,7 +11,12 @@ router.post("/book", authMiddleware, createTicket);
 router.get("/my-tickets", authMiddleware, getUserTickets);
 
 // Route to cancel a ticket
-router.delete("/cancel/:ticketId", authMiddleware, cancelTicket);
+
+//router.post('/cancel/:id', cancelTicket);
+
+router.post('/cancel/:id', authMiddleware, cancelTicket);
+
+
 
 // Route to get all tickets (admin only)
 router.get("/all", authMiddleware, adminOnly, getAllTickets);

@@ -1,7 +1,13 @@
-const Ticket = require("../models/Ticket");
 const Analytics = require("../models/Analytics");
 const Payment = require("../models/Payment");
-//const Ticket = mongoose.model("Ticket", ticketSchema, "tickets");
+const Razorpay = require('razorpay');
+const Ticket = require('../models/Ticket'); 
+const axios = require('axios');
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 const createTicket = async (req, res) => {
   console.log("🔍 Received Payment Data:", req.body);
@@ -60,39 +66,60 @@ const createTicket = async (req, res) => {
   }
 };
 
+
 const cancelTicket = async (req, res) => {
   try {
-    const { ticketId } = req.params;
-    const userId = req.user.id;
+    const { id } = req.params;
+    const ticket = await Ticket.findById(id);
 
-    const ticket = await Ticket.findOne({ _id: ticketId, userId });
     if (!ticket) {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
-    // ✅ Prevent cancellation for past events
-    if (new Date(ticket.date) <= new Date()) {
-      return res.status(400).json({ message: "Cannot cancel past events" });
+    if (ticket.status === "canceled") {
+      return res.status(400).json({ message: "Ticket is already canceled" });
     }
 
-    await Ticket.findByIdAndDelete(ticketId);
+    if (!ticket.paymentId) {
+      return res.status(400).json({ message: "Invalid payment information. Refund not possible." });
+    }
 
-    // ✅ Update Analytics
-    const analytics = await Analytics.findOneAndUpdate(
-      {},
-      {
-        $inc: { totalBookings: -1, totalRevenue: -ticket.price },
-        $set: { [`museumBookings.${ticket.museumName}`]: Math.max((analytics?.museumBookings?.get(ticket.museumName) || 1) - 1, 0) },
-      },
-      { new: true }
-    );
+    let refundResponse;
+    try {
+      refundResponse = await axios.post(
+        `https://api.razorpay.com/v1/payments/${ticket.paymentId}/refund`,
+        {},
+        {
+          auth: {
+            username: process.env.RAZORPAY_KEY_ID,
+            password: process.env.RAZORPAY_KEY_SECRET,
+          },
+        }
+      );
+    } catch (razorpayError) {
+      console.error("❌ Razorpay Refund Failed:", razorpayError.response?.data || razorpayError.message);
+      return res.status(500).json({ message: "Refund failed. Please try again later." });
+    }
 
-    res.status(200).json({ message: "✅ Ticket canceled successfully" });
+    // ✅ Update ticket status after successful refund
+    ticket.status = "canceled";
+    ticket.updatedAt = new Date();
+    await ticket.save();
+
+    res.status(200).json({
+      message: "✅ Ticket canceled and refund initiated.",
+      refundDetails: refundResponse.data,
+      ticket, // ✅ Send updated ticket to match frontend state
+    });
   } catch (error) {
     console.error("❌ Error canceling ticket:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Error canceling ticket", error: error.message });
   }
 };
+
+
+
+
 
 // ✅ Fetch user-specific tickets
 const getUserTickets = async (req, res) => {
