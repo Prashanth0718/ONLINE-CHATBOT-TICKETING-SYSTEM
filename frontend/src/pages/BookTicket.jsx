@@ -91,6 +91,7 @@ const BookTicket = () => {
           <input
             type="date"
             value={date}
+            min={new Date().toISOString().split("T")[0]} // ⛔ Prevents past dates
             onChange={(e) => setDate(e.target.value)}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required

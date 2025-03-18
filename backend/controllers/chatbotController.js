@@ -165,10 +165,25 @@ exports.chatbotHandler = async (req, res) => {
 
     // ✅ Step 4: Select Date
     else if (session.step === "select_date") {
-      session.selectedDate = userMessage;
-      response = { message: `🎫 How many tickets would you like for ${session.selectedMuseum} on ${session.selectedDate}?` };
-      session.step = "select_tickets";
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize time for accurate comparison
+
+      const selectedDateObj = new Date(userMessage);
+      selectedDateObj.setHours(0, 0, 0, 0); // Normalize user input date
+
+      if (isNaN(selectedDateObj)) {
+        response = { message: "❌ Invalid date format. Please enter a valid date in YYYY-MM-DD format." };
+      } else if (selectedDateObj < today) {
+        response = { message: "⚠️ You cannot book tickets for past dates. Please enter a future date." };
+      } else {
+        session.selectedDate = userMessage;
+        response = { 
+          message: `🎫 How many tickets would you like for *${session.selectedMuseum}* on *${session.selectedDate}*?`
+        };
+        session.step = "select_tickets";
+      }
     }
+
 
     // ✅ Step 5: Select Tickets
     else if (session.step === "select_tickets") {

@@ -12,9 +12,20 @@ const razorpay = new Razorpay({
 const createTicket = async (req, res) => {
   console.log("🔍 Received Payment Data:", req.body);
   try {
-    const { museumName, date: selectedDate, price, paymentId } = req.body;
+    const { museumName, date: selectedDate, price, paymentId, visitors } = req.body;
     console.log("📆 Received Date:", selectedDate);
     const userId = req.user.id;
+
+    // ✅ Convert & Validate Date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
+
+    const selectedDateObj = new Date(selectedDate);
+    selectedDateObj.setHours(0, 0, 0, 0); // Normalize time
+
+    if (selectedDateObj < today) {
+      return res.status(400).json({ message: "❌ Cannot book tickets for past dates." });
+    }
 
     // ✅ Ensure payment is verified
     const payment = await Payment.findOne({ paymentId });
@@ -23,32 +34,30 @@ const createTicket = async (req, res) => {
     }
 
     // ✅ Check if ticket already exists for the same user & event
-    const existingTicket = await Ticket.findOne({ userId, museumName, date });
+    const existingTicket = await Ticket.findOne({ userId, museumName, date: selectedDateObj });
     if (existingTicket) {
       return res.status(400).json({ message: "Ticket already booked" });
     }
 
     // ✅ Create and save ticket
-    // Convert date to YYYY-MM-DD format
-    const formattedDate = new Date(date).toISOString().split("T")[0];
+    const formattedDate = selectedDateObj.toISOString().split("T")[0];
 
     const ticket = new Ticket({
       userId,
       museumName,
-      date: formattedDate,  // ✅ Ensure correct format
+      date: formattedDate,
       price,
-      paymentId: razorpay_payment_id,
+      paymentId,
       status: "booked",
       visitors,
     });
 
-    
-    
     const savedTicket = await ticket.save();
     console.log("✅ Ticket saved in MongoDB:", ticket);
     if (!savedTicket) {
       return res.status(500).json({ message: "Ticket saving failed" });
-  }
+    }
+
     // ✅ Update Analytics
     const analytics = await Analytics.findOneAndUpdate(
       {},
@@ -65,6 +74,7 @@ const createTicket = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 const cancelTicket = async (req, res) => {
