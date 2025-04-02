@@ -1,41 +1,46 @@
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Import useAuth hook
+import ProfileDropdown from "./ProfileDropdown"; // Import the dropdown
 
 const Navbar = () => {
-  const { isLoggedIn, role, logout } = useAuth();
-
-  if (isLoggedIn === undefined) return null; // Prevents rendering issues
+  const { isLoggedIn, role } = useAuth(); // Get authentication info from context
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token"); // Check if user is logged in
 
   return (
-    <nav className="bg-blue-600 shadow-md py-3 px-6">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <Link to="/" className="text-white text-2xl font-bold">
-          🎟️ TicketBooking
-        </Link>
+    <nav className="bg-white shadow-md p-4 flex justify-between items-center">
+      {/* Logo */}
+      <Link to="/" className="text-2xl font-bold text-gray-800 flex items-center">
+        <span className="text-red-500">🎟️ Ticket</span>Booking
+      </Link>
 
-        <div className="space-x-4">
-          <Link to="/" className="text-white hover:underline">Home</Link>
-          <Link to="/book-ticket" className="text-white hover:underline">Book Ticket</Link>
+      {/* Navigation Links */}
+      <div className="space-x-6">
+        <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
+        <Link to="/book-ticket" className="text-gray-700 hover:text-blue-600">Book Ticket</Link>
+        <Link to="/chatbot" className="text-gray-700 hover:text-blue-600">Chatbot</Link>
+        <Link to="/my-tickets" className="text-gray-700 hover:text-blue-600">My Tickets</Link>
+        
+        {/* Only show Admin Panel link if the user is an admin */}
+        {role === "admin" && (
+          <Link to="/admin" className="text-gray-700 hover:text-blue-600">Admin Panel</Link>
+        )}
+      </div>
 
-          {!isLoggedIn ? (
-            <Link to="/login" className="text-white hover:underline">Login</Link>
-          ) : (
-            <>
-              {role === "user" && (
-                <Link to="/my-tickets" className="text-white hover:underline">My Tickets</Link>
-              )}
-              {role === "admin" && (
-                <Link to="/admin-dashboard" className="text-white hover:underline">Admin Panel</Link>
-              )}
-              <button
-                onClick={logout}
-                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </div>
+      {/* Auth / Profile Options */}
+      <div className="space-x-4">
+        {isLoggedIn ? (
+          <ProfileDropdown /> // Show profile dropdown if logged in
+        ) : (
+          <>
+            <Link to="/signin" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+              🔑 Sign In
+            </Link>
+            <Link to="/signup" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+              📝 Sign Up
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

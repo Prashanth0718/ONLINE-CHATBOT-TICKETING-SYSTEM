@@ -159,4 +159,3 @@ const getAllTickets = async (req, res) => {
 };
 
 module.exports = { createTicket, cancelTicket, getUserTickets, getAllTickets };
-

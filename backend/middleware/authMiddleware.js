@@ -1,42 +1,66 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require('../models/User'); // Ensure User model is correctly imported
 
-// Middleware to protect routes (check if user is authenticated)
 const authMiddleware = async (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1]; // Extract token
-  //console.log("🔍 Received Token:", token);
-  console.log("🔍 Received Token:", req.headers.authorization);
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ message: 'Access Denied. No Token Provided.' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Decoded Token:', decoded); // Debugging
+
+        const user = await User.findById(decoded.userId);
+        console.log('Decoded User:', user); // Debugging
+
+        if (!user) {
+            return res.status(403).json({ message: 'Access Forbidden: User Not Found' });
+        }
+
+        req.user = user; // Attach user to request
+        next();
+    } catch (error) {
+        console.error('Auth Error:', error);
+        res.status(401).json({ message: 'Invalid Token' });
+    }
+};
+
+const adminAuthMiddleware = async (req, res, next) => {
+  const token = req.header("Authorization")?.split(" ")[1];
 
   if (!token) {
-    console.error("🚨 No token provided.");
+    console.log("🚨 No token found.");
     return res.status(401).json({ message: "Access denied. No token provided." });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("✅ Decoded Token:", decoded);
+    console.log("Decoded Token:", decoded); // Debugging the decoded token
 
-    req.user = await User.findById(decoded.userId).select("-password"); 
-    console.log("🛠 Found User in DB:", req.user);
+    const user = await User.findById(decoded.userId).select("-password");
 
-    if (!req.user) {
-      console.error("🚨 User not found in database.");
+    if (!user) {
+      console.log("🚨 User not found.");
       return res.status(401).json({ message: "User not found" });
     }
 
-    next(); // Proceed
+    if (user.role !== "admin") {
+      console.log("🚨 Access denied. Not admin.");
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    req.user = user;
+    next();
   } catch (err) {
-    console.error("❌ JWT Auth Error:", err);
-    return res.status(400).json({ message: "Invalid token." });
+    console.error("JWT Auth Error:", err);
+    res.status(401).json({ message: "Unauthorized. Invalid token." });
   }
 };
 
 
-
 // Middleware to check for admin role
 const adminOnly = (req, res, next) => {
-  console.log("🔍 Checking Admin Access for:", req.user);
-
   if (!req.user) {
     console.error("🚨 User not found in request.");
     return res.status(403).json({ message: "Access denied. No user data found." });
@@ -51,21 +75,17 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-
 // Middleware to check for specific roles
-const authorizeRoles = (...roles) => {
-  return (req, res, next) => {
-    console.log("🔍 Checking role:", req.user?.role);
+const authorizeRoles = (...roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role)) {
+    console.error(`🚨 Role '${req.user?.role}' does not have access.`);
+    return res.status(403).json({ message: "Access denied. Insufficient role." });
+  }
 
-    if (!req.user || !roles.includes(req.user.role)) {
-      console.error(`🚨 Role '${req.user?.role}' does not have access.`);
-      return res.status(403).json({ message: "Access denied. Insufficient role." });
-    }
-
-    console.log("✅ Role authorized:", req.user.role);
-    next();
-  };
+  console.log("✅ Role authorized:", req.user.role);
+  next();
 };
 
 
-module.exports = { authMiddleware, adminOnly, authorizeRoles };
+module.exports = { authMiddleware, adminOnly, authorizeRoles, adminAuthMiddleware};
+

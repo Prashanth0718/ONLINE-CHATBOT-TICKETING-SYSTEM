@@ -1,12 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const { authMiddleware } = require("../middleware/authMiddleware"); // Import the authMiddleware
-const { getUserProfile, getUserTicketHistory } = require("../controllers/UserController"); // Import controller functions
 
-// Route to fetch user profile
-router.get("/profile", authMiddleware, getUserProfile);
+// Importing middleware
+const { authMiddleware } = require("../middleware/authMiddleware");
 
-// Route to fetch user ticket history
-router.get("/tickets/user", authMiddleware, getUserTicketHistory);
+// Importing controllers
+const {
+  getUserProfile,
+  updateUserProfile,
+  getUserTicketHistory,
+  changePassword,
+} = require("../controllers/UserController");
+
+// User profile routes
+router.get("/profile", authMiddleware, getUserProfile);  // Get user profile
+router.put("/profile", authMiddleware, updateUserProfile);  // Update user profile
+router.put("/change-password", authMiddleware, changePassword);  // Change password
+
+// User ticket history route
+router.get("/tickets/user", authMiddleware, getUserTicketHistory);  // Get user ticket history
+
 
 module.exports = router;

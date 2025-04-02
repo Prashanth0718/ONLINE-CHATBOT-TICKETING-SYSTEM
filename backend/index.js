@@ -10,8 +10,22 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const chatbotRoutes = require("./routes/chatbotRoutes");
 const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+const sendEmail = require("./utils/emailService");
+
+
+// sendEmail(
+//   "prashanththeromeo@gmail.com",
+//   "Test Email with PDF",
+//   "<p>This is a test email with an attachment.</p>",
+//   "./tickets/test_ticket.pdf"
+// )
+//   .then(() => console.log("✅ Test email sent successfully"))
+//   .catch((err) => console.error("❌ Email sending failed:", err));
+
 
 // Middleware
 const corsOptions = {
@@ -21,9 +35,8 @@ const corsOptions = {
   credentials: true, // Allow cookies/auth headers
 };
 
-//app.use(cors(corsOptions));
-//const cors = require("cors");
-app.use(cors());
+app.use(cors(corsOptions));
+//app.use(cors());
 
 
 app.use(express.json()); // Middleware to parse JSON requests
@@ -43,8 +56,8 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
-
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
 // Default Route
 app.get("/", (req, res) => {
   res.send("Welcome to the Chatbot Ticketing System API");

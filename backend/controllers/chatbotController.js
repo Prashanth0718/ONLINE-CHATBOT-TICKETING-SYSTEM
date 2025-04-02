@@ -36,6 +36,28 @@ exports.chatbotHandler = async (req, res) => {
     let { userMessage, session } = req.body;
     if (!session) session = {};
 
+    // ✅ Add Session Timeout Handling Here
+    // ✅ Add Session Timeout Handling Here
+const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
+const TIMEOUT_WARNING = 2 * 60 * 1000; // Additional 2 minutes before reset
+
+    if (session.lastInteraction) {
+      const now = Date.now();
+      const timeSinceLast = now - session.lastInteraction;
+
+      if (timeSinceLast > SESSION_TIMEOUT + TIMEOUT_WARNING) {
+        console.log("⏳ User inactive for too long. Resetting session...");
+        session = {}; // Reset session completely
+      } 
+      else if (timeSinceLast > SESSION_TIMEOUT) {
+        response.message = "⚠️ You have been inactive for a while. If you don’t respond within 2 minutes, the session will reset.";
+        return res.json({ response, session });
+      }
+    }
+
+    session.lastInteraction = Date.now(); // ✅ Update interaction time
+ // Update last interaction time
+
     let response = { message: "", options: [] };
     console.log("🟢 Received Message:", userMessage);
     console.log("🔵 Current Session Step:", session.step);
@@ -43,16 +65,19 @@ exports.chatbotHandler = async (req, res) => {
     const normalizedMessage = userMessage.trim().toLowerCase();
 
     // ✅ Step 1: Initial Welcome
-    if (!session.step) {
+    if (!session.step || normalizedMessage.includes("restart")) {
+      session = {}; // Reset session
       response.message = "Welcome! How can I assist you today?";
       response.options = [
         "Book a ticket 🎟️",
         "Check my tickets 📜",
         "Cancel my ticket ❌",
-        "Ask something else ❓"
+        "Ask something else ❓",
+        "Restart Chat 🔄"
       ];
       session.step = "main_menu";
     }
+
 
     // ✅ Step 2: Main Menu
     else if (session.step === "main_menu") {
@@ -158,42 +183,91 @@ exports.chatbotHandler = async (req, res) => {
 
     // ✅ Step 3: Select Museum
     else if (session.step === "select_museum") {
-      session.selectedMuseum = userMessage;
-      response = { message: "📅 Please enter the date you want to visit (YYYY-MM-DD)." };
-      session.step = "select_date";
-    }
-
-    // ✅ Step 4: Select Date
-    else if (session.step === "select_date") {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Normalize time for accurate comparison
-
-      const selectedDateObj = new Date(userMessage);
-      selectedDateObj.setHours(0, 0, 0, 0); // Normalize user input date
-
-      if (isNaN(selectedDateObj)) {
-        response = { message: "❌ Invalid date format. Please enter a valid date in YYYY-MM-DD format." };
-      } else if (selectedDateObj < today) {
-        response = { message: "⚠️ You cannot book tickets for past dates. Please enter a future date." };
+      const museums = await Museum.find({}, "name");
+      const availableMuseums = museums.map(m => m.name.toLowerCase());
+    
+      if (!availableMuseums.includes(userMessage.toLowerCase())) {
+        response.message = "⚠️ Invalid museum name. Please choose from the available options.";
+        response.options = museums.map(m => m.name);
       } else {
-        session.selectedDate = userMessage;
-        response = { 
-          message: `🎫 How many tickets would you like for *${session.selectedMuseum}* on *${session.selectedDate}*?`
-        };
-        session.step = "select_tickets";
+        session.selectedMuseum = userMessage;
+        response.message = "📅 Please enter the date you want to visit (YYYY-MM-DD).";
+        session.step = "select_date";
       }
     }
+    
 
+    else if (session.step === "select_date") {
+      const userDate = userMessage.trim();
+      const selectedDate = new Date(userDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+    
+      if (isNaN(selectedDate) || userDate.length !== 10) {
+        response.message = "⚠️ Invalid date format. Please enter a valid date in YYYY-MM-DD format.";
+      } else if (selectedDate < today) {
+        response.message = "⚠️ You cannot book tickets for past dates. Please enter a future date.";
+      } else {
+        session.selectedDate = userDate;
+    
+        try {
+          console.log("🔍 Searching for museum:", session.selectedMuseum);
+          const museum = await Museum.findOne({ name: session.selectedMuseum });
+    
+          if (!museum) {
+            console.log("❌ Museum not found!");
+            response.message = "⚠️ Museum not found. Please try again.";
+            session.step = "main_menu";
+          } else {
+            console.log("✅ Found Museum:", museum);
+            console.log("🔍 Museum Data Keys:", Object.keys(museum.toObject())); // Debugging
+    
+            // Fix: Access availableTickets properly
+            const availableTickets = museum.availableTickets || museum._doc?.availableTickets;
+    
+            console.log("🎟️ Available Tickets:", availableTickets);
+    
+            if (availableTickets === undefined) {
+              response.message = "⚠️ Error retrieving available tickets.";
+              session.step = "main_menu";
+            } else {
+              session.availableTickets = availableTickets;
+              response.message = `🎫 There are *${session.availableTickets}* tickets available for *${session.selectedMuseum}* on *${session.selectedDate}*. How many tickets would you like?`;
+              session.step = "select_tickets";
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error fetching available tickets:", error);
+          response.message = "⚠️ Failed to fetch available tickets. Please try again later.";
+          session.step = "main_menu";
+        }
+      }
+    }
+    
+
+
+
+
+    
 
     // ✅ Step 5: Select Tickets
     else if (session.step === "select_tickets") {
-      session.numTickets = parseInt(userMessage);
-      response = {
-        message: "✅ Tickets are available! Please proceed with payment.",
-        options: ["Proceed to Payment 💳"],
-      };
-      session.step = "payment";
+      const ticketCount = parseInt(userMessage, 10);
+    
+      if (isNaN(ticketCount) || ticketCount <= 0) {
+        response.message = "⚠️ Please enter a valid number of tickets (minimum 1).";
+      } else if (ticketCount > 10) {
+        response.message = "⚠️ You can only book up to 10 tickets at a time.";
+      } else {
+        session.numTickets = ticketCount;
+        response = {
+          message: "✅ Tickets are available! Please proceed with payment.",
+          options: ["Proceed to Payment 💳"],
+        };
+        session.step = "payment";
+      }
     }
+    
 
     // ✅ Step 6: Payment Process
     else if (session.step === "payment" && userMessage.includes("Proceed to Payment")) {

@@ -79,11 +79,6 @@ const getAnalytics = async (req, res) => {
 };
 
 
-
-
-
-
-
 // 📌 Get Analytics for a Specific Museum
 const getMuseumAnalytics = async (req, res) => {
   try {
@@ -164,6 +159,24 @@ const getAdminAnalytics = async (req, res) => {
   }
 };
 
+const getAnalyticsData = async (req, res) => {
+  try {
+    // If the user is not an admin, deny access
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    // Fetch analytics data (e.g., from the database)
+    const analytics = await Analytics.find();
+
+    return res.status(200).json(analytics);
+  } catch (error) {
+    console.error('Error fetching analytics data:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
 // 📌 Export All Functions
 module.exports = {
   trackChatbotQuery,
@@ -172,5 +185,6 @@ module.exports = {
   getMuseumAnalytics,
   resetDailyAnalytics,
   resetMonthlyAnalytics,
-  getAdminAnalytics
+  getAdminAnalytics,
+  getAnalyticsData,
 };

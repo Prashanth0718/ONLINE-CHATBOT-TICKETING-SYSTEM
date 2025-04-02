@@ -1,7 +1,10 @@
 const Footer = () => {
     return (
-      <footer className="bg-gray-900 text-white text-center py-4 mt-10">
-        <p>&copy; 2025 Online Ticketing System. All rights reserved.</p>
+      
+      <footer className="bg-blue-600 text-white py-6 text-center">
+
+        <p>© 2025 TicketBooking. All rights reserved.</p>
+        
       </footer>
     );
   };
