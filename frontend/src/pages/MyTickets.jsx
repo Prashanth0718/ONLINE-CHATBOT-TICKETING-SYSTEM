@@ -65,23 +65,25 @@ const MyTickets = () => {
     }
 
     try {
-      await axios.post(
+      await axios.delete(
         `http://localhost:5000/api/tickets/cancel/${ticketId}`,
-        {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      
 
       setTickets((prev) =>
-        prev.map((t) => (t._id === ticketId ? { ...t, status: "canceled" } : t))
+        prev.map((t) => (t._id === ticketId ? { ...t, status: "cancelled" } : t))
       );
+      
 
-      alert("✅ Ticket canceled successfully! Refund is being processed.");
+
+      alert("✅ Ticket cancelled successfully! Refund is being processed.");
     } catch (error) {
       console.error("❌ Error canceling ticket:", error.response?.data || error.message);
       alert("⚠️ Failed to cancel ticket.");
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 md:px-12">
       
@@ -100,7 +102,10 @@ const MyTickets = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tickets.map((ticket) => (
+          {tickets.map((ticket) => {
+          const isExpired = new Date(ticket.date) < new Date() && ticket.status === "booked";
+
+          return (
             <div
               key={ticket._id}
               className="bg-white bg-opacity-90 shadow-lg rounded-xl p-6 border border-gray-300 transition transform hover:scale-105 hover:shadow-2xl"
@@ -111,12 +116,25 @@ const MyTickets = () => {
 
               <span
                 className={`inline-block px-3 py-1 mt-2 text-sm font-semibold rounded-full ${
-                  ticket.status === "canceled"
+                  ticket.status === "cancelled"
                     ? "bg-red-500 text-white"
-                    : "bg-green-500 text-white"
+                    : isExpired
+                      ? "bg-yellow-500 text-white"
+                      : "bg-green-500 text-white"
                 }`}
+                title={
+                  ticket.status === "cancelled"
+                    ? "This ticket has been cancelled."
+                    : isExpired
+                      ? "This ticket has expired."
+                      : "This ticket is active."
+                }
               >
-                {ticket.status === "canceled" ? "🚫 Canceled" : "✅ Active"}
+                {ticket.status === "cancelled"
+                  ? "🚫 Cancelled"
+                  : isExpired
+                  ? "⌛ Expired"
+                  : "✅ Active"}
               </span>
 
               <div className="flex justify-between mt-5">
@@ -129,18 +147,24 @@ const MyTickets = () => {
 
                 <button
                   onClick={() => cancelTicket(ticket._id)}
-                  disabled={ticket.status === "canceled"}
+                  disabled={ticket.status === "cancelled" || isExpired}
                   className={`px-4 py-2 font-medium rounded-lg shadow-md transition transform ${
-                    ticket.status === "canceled"
+                    ticket.status === "cancelled" || isExpired
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-gradient-to-r from-red-500 to-pink-600 text-white hover:scale-105"
                   }`}
                 >
-                  {ticket.status === "canceled" ? "🚫 Canceled" : "❌ Cancel"}
+                  {ticket.status === "cancelled"
+                    ? "🚫 Cancelled"
+                    : isExpired
+                    ? "⌛ Expired"
+                    : "❌ Cancel"}
                 </button>
               </div>
             </div>
-          ))}
+          );
+        })}
+
         </div>
       )}
     </div>

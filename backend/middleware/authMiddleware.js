@@ -2,29 +2,34 @@ const jwt = require("jsonwebtoken");
 const User = require('../models/User'); // Ensure User model is correctly imported
 
 const authMiddleware = async (req, res, next) => {
+    console.log("🔹 authMiddleware called"); // Debugging
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        const token = req.header("Authorization")?.split(" ")[1];
         if (!token) {
-            return res.status(401).json({ message: 'Access Denied. No Token Provided.' });
+            console.log("🚨 No token found.");
+            return res.status(401).json({ message: "Access Denied. No Token Provided." });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Decoded Token:', decoded); // Debugging
+        console.log("Decoded Token:", decoded); // Debugging
 
-        const user = await User.findById(decoded.userId);
-        console.log('Decoded User:', user); // Debugging
+        const user = await User.findById(decoded.userId).select("-password");
+        console.log("Decoded User:", user); // Debugging
 
         if (!user) {
-            return res.status(403).json({ message: 'Access Forbidden: User Not Found' });
+            return res.status(403).json({ message: "Access Forbidden: User Not Found" });
         }
 
-        req.user = user; // Attach user to request
+        req.user = user;
+        console.log("✅ User authenticated successfully");
         next();
     } catch (error) {
-        console.error('Auth Error:', error);
-        res.status(401).json({ message: 'Invalid Token' });
+        console.error("Auth Error:", error);
+        return res.status(401).json({ message: "Invalid or Expired Token" });
     }
 };
+
+
 
 const adminAuthMiddleware = async (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1];
@@ -87,5 +92,9 @@ const authorizeRoles = (...roles) => (req, res, next) => {
 };
 
 
-module.exports = { authMiddleware, adminOnly, authorizeRoles, adminAuthMiddleware};
+module.exports.authMiddleware = authMiddleware;
+module.exports.adminAuthMiddleware = adminAuthMiddleware;
+module.exports.adminOnly = adminOnly;
+module.exports.authorizeRoles = authorizeRoles;
+
 

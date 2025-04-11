@@ -43,7 +43,7 @@ const AnalyticsChart = ({ analytics }) => {
         labels: monthlyStats.map((stat) => stat.month),
         datasets: [
             {
-                label: "Total Revenue ($)",
+                label: "Total Revenue (₹)",
                 data: monthlyStats.map((stat) => stat.revenue),
                 borderColor: "#FF5733",
                 backgroundColor: "rgba(255, 87, 51, 0.2)",

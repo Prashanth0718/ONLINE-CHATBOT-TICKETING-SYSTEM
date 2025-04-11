@@ -3,7 +3,7 @@ import ChatbotPage from "./pages/ChatbotPage"; // Import the Chatbot page
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import MyTickets from "./pages/MyTickets";
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/PrivateRoute";

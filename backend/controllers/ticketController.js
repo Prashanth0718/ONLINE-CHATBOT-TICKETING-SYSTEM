@@ -3,16 +3,29 @@ const Payment = require("../models/Payment");
 const Razorpay = require('razorpay');
 const Ticket = require('../models/Ticket'); 
 const axios = require('axios');
+const updateAnalyticsOnCancellation = require("../utils/updateAnalyticsOnCancellation");
+const Museum = require("../models/Museum");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+
+
+// ✅ Create Ticket
 const createTicket = async (req, res) => {
   console.log("🔍 Received Payment Data:", req.body);
   try {
     const { museumName, date: selectedDate, price, paymentId, visitors } = req.body;
+    if (!visitors || visitors <= 0) {
+      return res.status(400).json({ message: "Invalid number of visitors" });
+    }
+    if (!museumName || !selectedDate || !price || !paymentId) {
+      return res.status(400).json({ message: "Missing required fields" });  
+    }
+
+
     console.log("📆 Received Date:", selectedDate);
     const userId = req.user.id;
 
@@ -53,6 +66,15 @@ const createTicket = async (req, res) => {
     });
 
     const savedTicket = await ticket.save();
+    // try {
+    //   await ticket.save();
+    // } catch (error) {
+    //   if (error.code === 11000) {
+    //     return res.status(400).json({ message: "Duplicate Payment ID detected. Ticket already exists." });
+    //   }
+    //   throw error;
+    // }
+    
     console.log("✅ Ticket saved in MongoDB:", ticket);
     if (!savedTicket) {
       return res.status(500).json({ message: "Ticket saving failed" });
@@ -76,27 +98,34 @@ const createTicket = async (req, res) => {
 };
 
 
-
+// ✅ Cancel Ticket
 const cancelTicket = async (req, res) => {
+  console.log("🛬 cancelTicket function hit");
+  console.log("🔍 Cancel Ticket Request:", req.params);
+
   try {
     const { id } = req.params;
     const ticket = await Ticket.findById(id);
 
     if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
+      return res.status(404).json({ message: "❌ Ticket not found" });
     }
 
-    if (ticket.status === "canceled") {
-      return res.status(400).json({ message: "Ticket is already canceled" });
+    if (ticket.status === "cancelled") {
+      return res.status(400).json({ message: "❌ Ticket is already cancelled." });
+    }
+
+    if (ticket.refundStatus === "processed") {
+      return res.status(400).json({ message: "✅ Refund already processed for this ticket." });
     }
 
     if (!ticket.paymentId) {
-      return res.status(400).json({ message: "Invalid payment information. Refund not possible." });
+      return res.status(400).json({ message: "❌ Invalid payment ID. Refund not possible." });
     }
 
-    let refundResponse;
     try {
-      refundResponse = await axios.post(
+      // 🛑 Only proceed if not refunded before
+      const refundResponse = await axios.post(
         `https://api.razorpay.com/v1/payments/${ticket.paymentId}/refund`,
         {},
         {
@@ -106,29 +135,48 @@ const cancelTicket = async (req, res) => {
           },
         }
       );
+
+      // ✅ Update ticket status
+      ticket.status = "cancelled";
+      ticket.refundStatus = "processed";
+      ticket.updatedAt = new Date();
+      ticket.refundDetails = refundResponse.data;
+      await ticket.save();
+      await updateAnalyticsOnCancellation(ticket);
+
+      return res.status(200).json({
+        message: "✅ Ticket cancelled and refund initiated.",
+        refundDetails: refundResponse.data,
+        ticket,
+      });
+
     } catch (razorpayError) {
-      console.error("❌ Razorpay Refund Failed:", razorpayError.response?.data || razorpayError.message);
-      return res.status(500).json({ message: "Refund failed. Please try again later." });
+      const rzpMsg = razorpayError.response?.data?.error?.description;
+
+      // ⚠️ If already refunded, mark it in DB
+      if (rzpMsg === "The payment has been fully refunded already") {
+        ticket.status = "cancelled";
+        ticket.refundStatus = "processed"; // Mark as done
+        ticket.updatedAt = new Date();
+        await ticket.save();
+
+        return res.status(200).json({
+          message: "⚠️ Ticket was already refunded earlier. Status updated.",
+          ticket,
+        });
+      }
+
+      console.error("❌ Razorpay Refund Failed:", rzpMsg);
+      return res.status(500).json({ message: `Refund failed: ${rzpMsg}` });
     }
 
-    // ✅ Update ticket status after successful refund
-    ticket.status = "canceled";
-    ticket.updatedAt = new Date();
-    await ticket.save();
-
-    res.status(200).json({
-      message: "✅ Ticket canceled and refund initiated.",
-      refundDetails: refundResponse.data,
-      ticket, // ✅ Send updated ticket to match frontend state
-    });
   } catch (error) {
     console.error("❌ Error canceling ticket:", error);
-    res.status(500).json({ message: "Error canceling ticket", error: error.message });
+    if (!res.headersSent) {
+      return res.status(500).json({ message: "Error canceling ticket", error: error.message });
+    }
   }
 };
-
-
-
 
 
 // ✅ Fetch user-specific tickets
@@ -146,16 +194,114 @@ const getUserTickets = async (req, res) => {
 // ✅ Fetch all tickets (Admin Only)
 const getAllTickets = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {  // Access role from req.user
-      return res.status(403).json({ message: "Access denied. Admins only." });
-    }
+      const tickets = await Ticket.find()
+          .populate("userId", "name email") // ✅ This will include user's name and email
+          .sort({ createdAt: -1 });
 
-    const tickets = await Ticket.find();
-    res.status(200).json(tickets);
+      res.status(200).json(tickets);
   } catch (error) {
-    console.error("❌ Error fetching all tickets:", error);
-    res.status(500).json({ message: "Server error" });
+      console.error("Error fetching tickets:", error);
+      res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-module.exports = { createTicket, cancelTicket, getUserTickets, getAllTickets };
+const updateTicket = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const ticket = await Ticket.findById(id);
+    if (!ticket) return res.status(404).json({ error: "Ticket not found" });
+
+    const oldStatus = ticket.status;
+    if (oldStatus === status) {
+      return res.status(200).json({ message: "No status change", ticket });
+    }
+
+    const museum = await Museum.findOne({ name: ticket.museumName });
+    if (!museum) return res.status(404).json({ error: "Museum not found" });
+
+    const dateKey = ticket.date.toISOString().slice(0, 10);
+    let stats = museum.dailyStats.find(stat => stat.date === dateKey);
+    if (!stats) {
+      stats = {
+        date: dateKey,
+        availableTickets: museum.totalCapacity || 100,
+        bookedTickets: 0,
+      };
+      museum.dailyStats.push(stats);
+    }
+
+    // Ensure stats values are numbers
+    stats.bookedTickets = Number(stats.bookedTickets) || 0;
+    stats.availableTickets = Number(stats.availableTickets) || 0;
+
+    const ticketQty = Number(ticket.numTickets) || 0;
+    const ticketRevenue = Number(ticket.amountPaid) || 0;
+
+    console.log(`🛠 Status change: ${oldStatus} ➜ ${status}`);
+
+    if (oldStatus === "booked") {
+      stats.bookedTickets = Math.max(0, stats.bookedTickets - ticketQty);
+      stats.availableTickets += ticketQty;
+    }
+
+    if (status === "booked") {
+      if (stats.availableTickets < ticketQty) {
+        return res.status(400).json({ error: "Not enough tickets available to rebook" });
+      }
+      stats.bookedTickets += ticketQty;
+      stats.availableTickets = Math.max(0, stats.availableTickets - ticketQty);
+    }
+
+    // 🔥 Analytics updates
+    let analytics = await Analytics.findOne({ museumName: ticket.museumName });
+    console.log("🎯 Looking for analytics of museum:", ticket.museumName);
+
+    
+    
+
+    if (!analytics) {
+      analytics = new Analytics({
+        museumName: ticket.museumName.toLowerCase(),
+        totalBookings: 0,
+        totalRevenue: 0,
+        ticketBookings: 0,
+      });
+    }
+
+    if (oldStatus === "booked") {
+      analytics.ticketBookings = Math.max(0, analytics.ticketBookings - ticketQty);
+      analytics.totalRevenue = Math.max(0, analytics.totalRevenue - ticketRevenue);
+    }
+
+    if (status === "booked") {
+      analytics.ticketBookings += ticketQty;
+      analytics.totalRevenue += ticketRevenue;
+    }
+
+    console.log("🧮 Final Analytics:", {
+      bookings: analytics.ticketBookings,
+      revenue: analytics.totalRevenue,
+    });
+    
+
+    await analytics.save();
+  
+    
+    ticket.status = status;
+    await ticket.save();
+    await museum.save();
+
+    console.log("✅ Ticket, stats, and analytics updated");
+    res.json({ message: "Ticket status updated", ticket });
+
+  } catch (error) {
+    console.error("❌ Error updating ticket:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+
+module.exports = { createTicket, cancelTicket, getUserTickets, getAllTickets, updateTicket };

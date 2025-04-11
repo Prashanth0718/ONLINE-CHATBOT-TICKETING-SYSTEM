@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import TypingDots from "../components/TypingDots"; // Adjust the path as needed
 
 const Chatbot = () => {
-    const [messages, setMessages] = useState([]); // Stores chat messages
-    const [session, setSession] = useState({});   // Stores chatbot session
-    const [userMessage, setUserMessage] = useState(""); // User input
-    const [isTyping, setIsTyping] = useState(false); // Bot typing state
-    const chatEndRef = useRef(null); // For auto-scrolling
+    const [messages, setMessages] = useState([]);
+    const [session, setSession] = useState({});
+    const [userMessage, setUserMessage] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
+    const chatEndRef = useRef(null);
+    const [darkMode, setDarkMode] = useState(false);
+    const [language, setLanguage] = useState("en"); // default to English
+    
 
-    // Function to send message to chatbot API
     const sendMessage = async (message) => {
         if (!message.trim()) return;
 
@@ -24,32 +27,39 @@ const Chatbot = () => {
         const newMessages = [...messages, { text: message, sender: "user" }];
         setMessages(newMessages);
         setUserMessage("");
-        setIsTyping(true); // Show typing indicator
+        setIsTyping(true);
 
         try {
             const response = await axios.post(
                 "http://localhost:5000/api/chatbot",
-                { userMessage: message, session },
+                { userMessage: message, session, language },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            const botMessage = response.data.response;
-            setMessages([...newMessages, { text: botMessage.message, sender: "bot", options: botMessage.options || [] }]);
+            const botResponse = response.data.response || {};
+            const replyText = botResponse.message || botResponse.reply || (typeof botResponse === "string" ? botResponse : "🤖 Sorry, I didn't understand that.");
 
-            if (botMessage.orderId && botMessage.amount) {
-                openRazorpayCheckout(botMessage);
+            const botMessage = {
+                text: replyText,
+                sender: "bot",
+                options: botResponse.options || []
+            };
+
+            setMessages([...newMessages, botMessage]);
+
+            if (botResponse.orderId && botResponse.amount) {
+                openRazorpayCheckout(botResponse);
             }
 
             setSession(response.data.session);
         } catch (error) {
             console.error("Chatbot error:", error);
-            setMessages([...newMessages, { text: "Error connecting to chatbot.", sender: "bot" }]);
+            setMessages([...newMessages, { text: "❌ Error connecting to chatbot.", sender: "bot" }]);
         } finally {
-            setIsTyping(false); // Hide typing indicator
+            setIsTyping(false);
         }
     };
 
-    // Razorpay Integration
     const openRazorpayCheckout = (paymentData) => {
         const options = {
             key: paymentData.key,
@@ -59,8 +69,6 @@ const Chatbot = () => {
             description: "Book your ticket",
             order_id: paymentData.orderId,
             handler: async function (response) {
-                console.log("✅ Payment Successful:", response);
-                
                 try {
                     const verifyResponse = await axios.post(
                         "http://localhost:5000/api/payment/verify",
@@ -89,56 +97,92 @@ const Chatbot = () => {
                 }
             },
             prefill: { email: "user@example.com" },
+            method: { upi: true, card: false },
+            theme: { color: "#3399cc" }
         };
 
         const rzp = new window.Razorpay(options);
         rzp.open();
     };
 
-    // Function to check if JWT token is expired
     const isTokenExpired = (token) => {
         try {
-            const decoded = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
-            return decoded.exp * 1000 < Date.now(); // Check expiry
-        } catch (error) {
-            return true; // Treat as expired if decoding fails
+            const decoded = JSON.parse(atob(token.split(".")[1]));
+            return decoded.exp * 1000 < Date.now();
+        } catch {
+            return true;
         }
     };
 
-    // Function to refresh JWT token
     const refreshToken = async () => {
         try {
             const response = await axios.post("http://localhost:5000/api/auth/refresh-token", {}, { withCredentials: true });
             localStorage.setItem("token", response.data.token);
             return response.data.token;
-        } catch (error) {
-            console.error("Failed to refresh token", error);
+        } catch {
             return null;
         }
     };
 
-    // Auto-scroll to the latest message
     useEffect(() => {
+        if (messages.length === 0) {
+            setMessages([
+                { text: "👋 Welcome! Please type *Hi* to begin the conversation.", sender: "bot" }
+            ]);
+        }
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
     return (
-        <div className="flex flex-col w-full max-w-md mx-auto bg-white shadow-lg rounded-lg p-4 border border-gray-300">
-            {/* Chat Messages */}
-            <div className="h-96 overflow-y-auto p-2 border-b border-gray-300">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} mb-2`}>
-                        <div className={`px-4 py-2 max-w-[80%] rounded-lg shadow-md ${msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-900"}`}>
+                
+        <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"} transition-all duration-300 flex flex-col w-full max-w-md mx-auto shadow-lg rounded-lg p-4 border`}>
+                
+        <h2 className="text-xl font-bold mb-4 text-center">🤖 Chatbot</h2>
+        <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-semibold">🌗 Toggle Dark Mode</span>
+                <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className={`px-3 py-1 rounded-full text-sm transition-all duration-300 font-medium ${
+                        darkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-800 text-white"
+                    }`}
+                >
+                    {darkMode ? "Light Mode" : "Dark Mode"}
+                </button>
+        </div>
+
+        <div className="flex justify-between items-center mb-4">
+            <span className="text-sm font-semibold">🌐 Select Language</span>
+            <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="p-1 border rounded text-sm bg-white text-black"
+            >
+                <option value="en">English</option>
+                <option value="hi">हिंदी (Hindi)</option>
+                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+            </select>
+        </div>
+
+
+        {/* Chat area */}
+            <div className="h-[400px] overflow-y-auto p-4 bg-white/20 rounded-xl border border-white/30 space-y-3 transition-all">
+                {messages.map((msg, idx) => (
+                    <div key={idx} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} transition-all duration-300`}>
+                        <div className={`px-4 py-2 rounded-xl max-w-[75%] shadow-md ${
+                            msg.sender === "user"
+                                ? "bg-gradient-to-br from-blue-500 to-blue-700 text-white"
+                                : "bg-white text-gray-900"
+                        }`}>
                             {msg.text}
                         </div>
                     </div>
                 ))}
-
-                {/* Typing Indicator */}
                 {isTyping && (
-                    <div className="flex justify-start">
-                        <div className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow-md animate-pulse">
-                            Bot is typing...
+                    <div className="flex justify-start px-4 py-2">
+                        <div className="bg-gray-200 px-3 py-2 rounded-lg shadow">
+                            <TypingDots />
                         </div>
                     </div>
                 )}
@@ -146,33 +190,48 @@ const Chatbot = () => {
                 <div ref={chatEndRef} />
             </div>
 
-            {/* Quick Reply Buttons */}
+            {/* Date Picker */}
+            {session.step === "select_date" && (
+                <div className="mt-3">
+                    <label className="text-sm text-gray-700">📅 Choose a date:</label>
+                    <input
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]}
+                        className="w-full mt-1 p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        onChange={(e) => e.target.value && sendMessage(e.target.value)}
+                    />
+                </div>
+            )}
+
+            {/* Option Buttons */}
             {messages.length > 0 && messages[messages.length - 1].options?.length > 0 && (
-                <div className="mb-2">
-                    {messages[messages.length - 1].options.map((option, idx) => (
-                        <button 
-                            key={idx} 
-                            onClick={() => sendMessage(option)} 
-                            className="bg-blue-500 text-white px-3 py-1 rounded mr-2 mb-1 hover:bg-blue-600 transition shadow">
+                <div className="flex flex-wrap gap-2 mt-3">
+                    {messages[messages.length - 1].options.map((option, i) => (
+                        <button
+                            key={i}
+                            onClick={() => sendMessage(option)}
+                            className="bg-gradient-to-br from-blue-500 to-blue-700 text-white px-4 py-2 rounded-lg hover:scale-105 transition-transform"
+                        >
                             {option}
                         </button>
                     ))}
                 </div>
             )}
 
-            {/* Input Box & Send Button */}
-            <div className="flex">
+            {/* Input */}
+            <div className="mt-4 flex">
                 <input
                     type="text"
-                    className="flex-1 border border-gray-400 p-2 rounded-l outline-none focus:ring focus:ring-blue-300"
+                    placeholder="Type a message..."
                     value={userMessage}
                     onChange={(e) => setUserMessage(e.target.value)}
-                    placeholder="Type a message..."
                     onKeyPress={(e) => e.key === "Enter" && sendMessage(userMessage)}
+                    className="flex-1 px-4 py-2 rounded-l-md border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
                 />
-                <button 
-                    onClick={() => sendMessage(userMessage)} 
-                    className="bg-blue-500 text-white px-4 rounded-r hover:bg-blue-600 transition">
+                <button
+                    onClick={() => sendMessage(userMessage)}
+                    className="bg-blue-600 text-white px-4 rounded-r-md hover:bg-blue-700 transition"
+                >
                     Send
                 </button>
             </div>

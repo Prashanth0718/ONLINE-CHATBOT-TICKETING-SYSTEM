@@ -11,6 +11,8 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 const chatbotRoutes = require("./routes/chatbotRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const museumRoutes = require("./routes/museumRoutes");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -52,12 +54,16 @@ mongoose
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tickets", ticketRoutes);
+app.use('/api/tickets', require('./routes/ticketRoutes'));
+
 app.use("/api/payment", paymentRoutes);
+//app.use("/api/payments", paymentRoutes);
+app.use("/api/payments", require("./routes/paymentRoutes"));
 app.use("/api/chatbot", chatbotRoutes);
-app.use("/api/analytics", analyticsRoutes);
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/museums", museumRoutes);
 // Default Route
 app.get("/", (req, res) => {
   res.send("Welcome to the Chatbot Ticketing System API");
