@@ -7,7 +7,7 @@ const {
   updateUserProfile,
   getUserTicketHistory,
   changePassword,
-} = require("../controllers/userController");
+} = require("../controllers/UserController");
 
 // ✅ Password Change Rate Limiter (Security Feature)
 const passwordChangeLimiter = rateLimit({

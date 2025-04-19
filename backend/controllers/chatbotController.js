@@ -55,12 +55,10 @@ exports.chatbotHandler = async (req, res) => {
       console.log("🟢 Received Message:", userMessage);
       console.log("🔵 Current Session Step:", session.step);
 
-       const normalizedMessage = userMessage.trim().toLowerCase();
-       console.log("Normalized Input:", normalizedMessage);
-      // const greetingResult = handleGreetingStep({ userMessage, normalizedMessage, session, response });
-      // if (greetingResult?.end) {
-      //   return res.json({ session: greetingResult.session, response: greetingResult.response });
-      // }
+      //const normalizedMessage = userMessage.toLowerCase().replace(/[^\w\s]/gi, "").trim();
+      const normalizedMessage = userMessage.toLowerCase().replace(/[^\w\s]/gi, "").trim();
+
+      console.log("Normalized Input:", normalizedMessage);
       
       const greetingHandled = await handleGreetingStep({ userMessage, normalizedMessage, session, response });
       if (greetingHandled) return res.json({ response, session });
@@ -75,6 +73,30 @@ exports.chatbotHandler = async (req, res) => {
       else if (userMessage.toLowerCase().includes("ask something else") || session.step === "ask_something_else") {
         await handleAskSomethingElse({ userMessage, session, response });
       }
+
+      else if (session.step === "post_info_suggestions") {
+        if (normalizedMessage.includes("ask another")) {
+          session.awaitingCustomQuestion = true;
+          session.step = "ask_something_else";
+          response.message = "💬 Sure! Please type your question.";
+          return res.json({ response, session });
+      
+        } else if (normalizedMessage.includes("main menu")) {
+          console.log("✅ User selected: Go Back to Main Menu");
+          session.step = "main_menu";
+          response.message = "🏠 Main Menu:\n1. 🎟️ Book Tickets\n2. ❌ Cancel Tickets\n3. ℹ️ Ask Something Else";
+          await handleMainMenu({ req, userMessage, session, response });
+          return res.json({ response, session });
+      
+        } else {
+          console.log("❓ Unrecognized input at post_info_suggestions");
+          response.message = "❓ I didn't understand that. Please choose an option again.";
+          return res.json({ response, session });
+        }
+      }
+          
+      
+
 
       // ✅ Step 2: Main Menu    
       else if (session.step === "main_menu") {

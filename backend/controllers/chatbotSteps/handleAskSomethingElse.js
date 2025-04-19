@@ -8,17 +8,27 @@ const handleAskSomethingElse = async ({ userMessage, session, response }) => {
     return;
   }
 
+  if (
+    userMessage.toLowerCase().includes("ask another question") ||
+    userMessage.toLowerCase().includes("go back to main menu")
+  ) {
+    response.message = "💬 Please type your actual question.";
+    return;
+  }
+
   try {
     const answer = await askGemini(userMessage);
     response.message = `🤖 ${answer}`;
-    session.step = "main_menu";
+    session.step = "post_info_suggestions";
     session.awaitingCustomQuestion = false;
+    response.options = ["❓ Ask another question", "🏠 Go back to Main Menu"];
   } catch (error) {
     console.error("❌ Error in custom question flow:", error.message || error);
     response.message = "⚠️ Sorry, I couldn't get an answer for that. Please try again.";
-    session.step = "main_menu";
+    session.step = "post_info_suggestions";
     session.awaitingCustomQuestion = false;
   }
 };
+
 
 module.exports = handleAskSomethingElse;

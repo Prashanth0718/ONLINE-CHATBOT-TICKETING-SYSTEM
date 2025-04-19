@@ -1,4 +1,3 @@
-// utils/cancelTicketChatbot.js
 const axios = require("axios");
 const Ticket = require("../models/Ticket");
 const Museum = require("../models/Museum");
@@ -13,9 +12,24 @@ const cancelTicketChatbot = async (ticketId) => {
       return "⚠️ This ticket is already cancelled.";
     }
 
+    // ❌ Prevent cancelling expired tickets
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Midnight - ignore time
+
+    const ticketDate = new Date(ticket.date);
+    ticketDate.setHours(0, 0, 0, 0); // Ignore time for comparison
+
+    if (ticketDate < today) {
+      return "⚠️ This ticket has expired and cannot be cancelled.";
+    }
+
+
     // ✅ Razorpay Refund if not already refunded
     if (ticket.paymentId && ticket.refundStatus !== "processed") {
       try {
+        // Optional: Log payment ID and Razorpay credentials for debugging
+        console.log("🔍 Attempting Razorpay refund for Payment ID:", ticket.paymentId);
+
         const refundResponse = await axios.post(
           `https://api.razorpay.com/v1/payments/${ticket.paymentId}/refund`,
           {},
@@ -30,12 +44,13 @@ const cancelTicketChatbot = async (ticketId) => {
         ticket.refundStatus = "processed";
         ticket.refundDetails = refundResponse.data;
       } catch (razorpayError) {
-        const rzpMsg = razorpayError.response?.data?.error?.description;
+        const rzpMsg = razorpayError.response?.data?.error?.description || razorpayError.message;
+        console.error("❌ Razorpay Refund Failed:", rzpMsg);
+
         if (rzpMsg === "The payment has been fully refunded already") {
           ticket.refundStatus = "processed"; // Still mark it as processed
         } else {
-          console.error("❌ Razorpay Refund Failed:", rzpMsg);
-          return "⚠️ Refund failed. Please try again later.";
+          return `⚠️ Refund failed: ${rzpMsg}`;
         }
       }
     }
@@ -46,7 +61,6 @@ const cancelTicketChatbot = async (ticketId) => {
     await ticket.save();
     await updateAnalyticsOnCancellation(ticket);
 
-
     // ✅ Update Museum stats
     const museum = await Museum.findOne({ name: ticket.museumName });
     if (museum) {
@@ -54,8 +68,8 @@ const cancelTicketChatbot = async (ticketId) => {
       const stats = museum.dailyStats.find((stat) => stat.date === dateKey);
 
       if (stats) {
-        stats.availableTickets += ticket.numTickets;
-        stats.bookedTickets -= ticket.numTickets;
+        stats.availableTickets += ticket.visitors;
+        stats.bookedTickets -= ticket.visitors;
 
         if (stats.bookedTickets < 0) stats.bookedTickets = 0;
         await museum.save();

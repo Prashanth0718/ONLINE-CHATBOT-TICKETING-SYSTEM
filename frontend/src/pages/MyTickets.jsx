@@ -79,7 +79,7 @@ const MyTickets = () => {
 
       alert("✅ Ticket cancelled successfully! Refund is being processed.");
     } catch (error) {
-      console.error("❌ Error canceling ticket:", error.response?.data || error.message);
+      console.error("❌ Error cancelling ticket:", error.response?.data || error.message);
       alert("⚠️ Failed to cancel ticket.");
     }
   };
@@ -103,7 +103,12 @@ const MyTickets = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tickets.map((ticket) => {
-          const isExpired = new Date(ticket.date) < new Date() && ticket.status === "booked";
+            // 🕒 Check if the ticket is expired
+          const now = new Date();
+          const ticketDate = new Date(ticket.date);
+          ticketDate.setHours(23, 59, 59, 999);
+          const isExpired = ticketDate < now && ticket.status === "booked";
+          
 
           return (
             <div

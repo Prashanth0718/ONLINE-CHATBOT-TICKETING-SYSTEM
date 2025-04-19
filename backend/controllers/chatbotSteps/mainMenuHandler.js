@@ -4,6 +4,23 @@ const Museum = require("../../models/Museum");
 const handleMainMenu = async ({ req, userMessage, session, response }) => {
   const normalizedInput = userMessage.trim().toLowerCase().replace(/[^\w\s]/g, "");
   console.log("Normalized Input:", normalizedInput);
+  // 🏠 Go Back to Main Menu
+if (
+  normalizedInput.includes("go back to main menu") ||
+  normalizedInput.includes("back to menu") ||
+  normalizedInput.includes("main menu")
+) {
+  response.message = "🏠 You're back at the Main Menu! What would you like to do?";
+  response.options = [
+    "Book a ticket 🎟️",
+    "Check my tickets 📜",
+    "Cancel my ticket ❌",
+    "Ask something else ❓",
+    "Restart Chat 🔄"
+  ];
+  session.step = "main_menu";
+  return;
+}
 
   // 🔄 Handle common greetings inside main menu too
   if (["hi", "hello", "hey"].includes(normalizedInput)) {

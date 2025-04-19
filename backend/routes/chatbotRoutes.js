@@ -6,7 +6,7 @@ const router = express.Router();
 const rateLimit = require("express-rate-limit");
 const chatbotLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minute
-    max: 10, // Limit each IP to 10 chatbot requests per minute
+    max: 50, // Limit each IP to 10 chatbot requests per minute
     message: { message: "⚠ Too many requests, please try again later." }
 });
 
