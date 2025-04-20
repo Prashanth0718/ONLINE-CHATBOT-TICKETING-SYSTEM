@@ -3,6 +3,7 @@ const Museum = require("../../models/Museum");
 
 const handleMainMenu = async ({ req, userMessage, session, response }) => {
   const normalizedInput = userMessage.trim().toLowerCase().replace(/[^\w\s]/g, "");
+  //const normalizedInput = userMessage.toLowerCase().replace(/[^\w\s]/g, "").trim();
   console.log("Normalized Input:", normalizedInput);
   // 🏠 Go Back to Main Menu
 if (
@@ -46,7 +47,13 @@ if (
   }
 
   // 📜 Check My Tickets
-  else if (normalizedInput.includes("check my tickets")) {
+  else if (
+    normalizedInput.includes("check my tickets") ||
+    normalizedInput.includes("view my tickets") ||
+    normalizedInput.includes("show my tickets") ||
+    normalizedInput.includes("my tickets")
+  ) {
+    console.log("✅ Matched ticket check input");
     const token = req.headers.authorization;
     if (!token) {
       response.message = "⚠️ You need to log in to check your tickets.";

@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import TypingDots from "../components/TypingDots"; // Adjust the path as needed
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'; // or choose another theme
+import emoji from 'emoji-dictionary';
+
+
+
+const emojify = (text) =>
+  text.replace(/:([a-zA-Z0-9_+-]+):/g, (match, name) => emoji.getUnicode(name) || match);
+
 
 const Chatbot = () => {
     const [messages, setMessages] = useState([]);
@@ -46,10 +56,16 @@ const Chatbot = () => {
             };
 
             setMessages([...newMessages, botMessage]);
-
+            
             if (botResponse.orderId && botResponse.amount) {
-                openRazorpayCheckout(botResponse);
+            openRazorpayCheckout(botResponse);
+            // Clear options to prevent duplicate clicks
+            setMessages(prev => {
+                const last = { ...prev[prev.length - 1], options: [] };
+                return [...prev.slice(0, -1), last];
+            });
             }
+
 
             setSession(response.data.session);
         } catch (error) {
@@ -87,8 +103,22 @@ const Chatbot = () => {
                     if (verifyResponse.data.message === "Payment successful & Ticket booked") {
                         setTimeout(() => {
                             alert("✅ Ticket successfully booked!");
+                    
+                            // 👇 Now send a message to continue the chatbot flow
+                            setMessages(prev => [
+                                ...prev,
+                                {
+                                    text: "🎉 Your ticket has been successfully booked!\n\nWould you like to do anything else?",
+                                    sender: "bot",
+                                    options: ["🔙 Main Menu", "📄 View My Tickets"]
+                                }
+                            ]);
+                    
+                            // Optionally reset session or update chatbot flow
+                            setSession(prev => ({ ...prev, step: "main_menu" }));
                         }, 500);
-                    } else {
+                    }
+                     else {
                         alert("❌ Payment verification failed.");
                     }
                 } catch (error) {
@@ -127,7 +157,7 @@ const Chatbot = () => {
     useEffect(() => {
         if (messages.length === 0) {
             setMessages([
-                { text: "👋 Welcome! Please type *Hi* to begin the conversation.", sender: "bot" }
+                { text: "👋 Welcome! Please type **Hi** to begin the conversation.", sender: "bot" }
             ]);
         }
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -135,7 +165,11 @@ const Chatbot = () => {
 
     return (
                 
-        <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"} transition-all duration-300 flex flex-col w-full max-w-md mx-auto shadow-lg rounded-lg p-4 border`}>
+        // <div className={`h-[400px] overflow-y-auto p-4 rounded-xl border space-y-3 transition-all 
+        //     ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white/20 border-white/30"}
+        // `}>
+        <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"} transition-all duration-300 flex flex-col w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto shadow-lg rounded-lg p-4 border`}>
+
                 
         <h2 className="text-xl font-bold mb-4 text-center">🤖 Chatbot</h2>
         <div className="flex justify-between items-center mb-2">
@@ -155,7 +189,8 @@ const Chatbot = () => {
             <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="p-1 border rounded text-sm bg-white text-black"
+                className={`p-1 border rounded text-sm ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
+
             >
                 <option value="en">English</option>
                 <option value="hi">हिंदी (Hindi)</option>
@@ -173,15 +208,57 @@ const Chatbot = () => {
                         <div className={`px-4 py-2 rounded-xl max-w-[75%] shadow-md ${
                             msg.sender === "user"
                                 ? "bg-gradient-to-br from-blue-500 to-blue-700 text-white"
-                                : "bg-white text-gray-900"
+                                : `${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`
                         }`}>
-                            {msg.text}
+                            <ReactMarkdown
+  components={{
+    h1: ({ children }) => <h1 className="text-2xl font-bold mb-2">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-xl font-semibold mb-2">{children}</h2>,
+    p: ({ children }) => <p className="mb-1">{children}</p>,
+    ul: ({ children }) => <ul className="list-disc list-inside mb-2">{children}</ul>,
+    li: ({ children }) => <li className="ml-4">{children}</li>,
+    strong: ({ children }) => <strong className="font-semibold text-blue-600">{children}</strong>,
+    em: ({ children }) => <em className="italic text-purple-500">{children}</em>,
+    a: ({ href, children }) => (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline text-blue-500 hover:text-blue-700"
+      >
+        {children}
+      </a>
+    ),
+    code({ node, inline, className, children, ...props }) {
+        const match = /language-(\w+)/.exec(className || '');
+        return !inline && match ? (
+          <SyntaxHighlighter
+            style={oneDark}
+            language={match[1]}
+            PreTag="div"
+            {...props}
+            className="rounded-lg my-2 text-sm"
+          >
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        ) : (
+          <code className="bg-gray-200 text-pink-600 px-1 py-0.5 rounded text-sm font-mono">{children}</code>
+        );
+      }
+      
+  }}
+>
+{emojify(msg.text)}
+</ReactMarkdown>
+
+
                         </div>
                     </div>
                 ))}
                 {isTyping && (
                     <div className="flex justify-start px-4 py-2">
-                        <div className="bg-gray-200 px-3 py-2 rounded-lg shadow">
+                        <div className={`${darkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black"} px-3 py-2 rounded-lg shadow`}>
+
                             <TypingDots />
                         </div>
                     </div>
@@ -197,7 +274,9 @@ const Chatbot = () => {
                     <input
                         type="date"
                         min={new Date().toISOString().split("T")[0]}
-                        className="w-full mt-1 p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        className={`w-full mt-1 p-2 rounded border focus:ring-2 focus:ring-blue-400 focus:outline-none ${
+                            darkMode ? "bg-gray-800 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                          }`}
                         onChange={(e) => e.target.value && sendMessage(e.target.value)}
                     />
                 </div>
@@ -226,17 +305,50 @@ const Chatbot = () => {
                     value={userMessage}
                     onChange={(e) => setUserMessage(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage(userMessage)}
-                    className="flex-1 px-4 py-2 rounded-l-md border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                    className={`flex-1 px-4 py-2 rounded-l-md border focus:ring-2 focus:ring-blue-400 outline-none ${
+                        darkMode ? "bg-gray-800 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                      }`}                      
                 />
                 <button
-                    onClick={() => sendMessage(userMessage)}
-                    className="bg-blue-600 text-white px-4 rounded-r-md hover:bg-blue-700 transition"
+                onClick={() => sendMessage(userMessage)}
+                className={`px-4 rounded-r-md transition font-medium ${
+                    darkMode
+                    ? "bg-gray-600 text-gray-300 hover:bg-gray-500"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
                 >
-                    Send
+                Send
                 </button>
+
             </div>
         </div>
     );
 };
 
 export default Chatbot;
+
+
+//  {/* Chat area */}
+// <div className="h-[400px] overflow-y-auto p-4 bg-white/20 rounded-xl border border-white/30 space-y-3 transition-all">
+// {messages.map((msg, idx) => (
+//     <div key={idx} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} transition-all duration-300`}>
+//         <div className={`px-4 py-2 rounded-xl max-w-[75%] shadow-md ${
+//             msg.sender === "user"
+//                 ? "bg-gradient-to-br from-blue-500 to-blue-700 text-white"
+//                 : `${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`
+//         }`}>
+//             {msg.text}
+//         </div>
+//     </div>
+// ))}
+// {isTyping && (
+//     <div className="flex justify-start px-4 py-2">
+//         <div className={`${darkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-black"} px-3 py-2 rounded-lg shadow`}>
+
+//             <TypingDots />
+//         </div>
+//     </div>
+// )}
+
+// <div ref={chatEndRef} />
+// </div>
