@@ -34,6 +34,7 @@ router.get("/users/:userId/bookings", adminAuthMiddleware, async (req, res) => {
 
 // ✅ UPDATE a booking (Admin Only)
 router.put("/bookings/:id", adminAuthMiddleware, async (req, res) => {
+    console.log("🔍 DELETE /bookings/:id route hit with ID:", req.params.id);
     try {
         const { museumName, visitors, status } = req.body;
         const updatedBooking = await Ticket.findByIdAndUpdate(

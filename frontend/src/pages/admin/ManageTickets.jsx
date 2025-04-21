@@ -36,7 +36,7 @@ const ManageTickets = () => {
         try {
             const token = localStorage.getItem("token");
     
-            await axios.delete(`http://localhost:5000/api/tickets/${id}`, {
+            await axios.delete(`http://localhost:5000/api/admin/bookings/${id}`, {
                 headers: { 
                     Authorization: `Bearer ${token}`
                 },

@@ -163,11 +163,23 @@ const Chatbot = () => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    // useEffect(() => {
+    //     if (messages.length === 0) {
+    //         setMessages([
+    //             {
+    //                 text: "👋 Welcome! Please select your language to begin the conversation.",
+    //                 sender: "bot",
+    //                 options: ["English 🇬🇧", "हिंदी 🇮🇳", "ಕನ್ನಡ 🇮🇳", "తెలుగు 🇮🇳", "தமிழ் 🇮🇳"]
+    //             }
+    //         ]);
+    //         setSession({ step: "select_language" }); // Add this so backend knows to expect a language selection
+    //     }
+    //     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, [messages]);
+    
+    
     return (
-                
-        // <div className={`h-[400px] overflow-y-auto p-4 rounded-xl border space-y-3 transition-all 
-        //     ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white/20 border-white/30"}
-        // `}>
+            
         <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"} transition-all duration-300 flex flex-col w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto shadow-lg rounded-lg p-4 border`}>
 
                 
