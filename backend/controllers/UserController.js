@@ -32,6 +32,11 @@ const updateUserProfile = async (req, res) => {
         // Update user fields
         user.name = req.body.name || user.name;
         user.email = req.body.email || user.email;
+        user.phone = req.body.phone || user.phone;
+        user.address = req.body.address || user.address;
+        user.dob = req.body.dob || user.dob;
+        user.city = req.body.city || user.city;
+        user.country = req.body.country || user.country;
 
         const updatedUser = await user.save();
         res.json({

@@ -85,42 +85,43 @@ const ManagePayments = () => {
         }
     };
 
-    if (loading) return <p>Loading payments...</p>;
-    if (error) return <p className="text-red-500">{error}</p>;
+    if (loading) return <p className="text-center p-4 text-gray-600">Loading payments...</p>;
+    if (error) return <p className="text-center text-red-500">{error}</p>;
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Manage Payments</h2>
+        <div className="p-6 bg-white shadow-lg rounded-lg">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Manage Payments</h2>
+            
             <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
+                <table className="min-w-full bg-white border-collapse border border-gray-300">
                     <thead>
-                        <tr className="bg-gray-200">
-                            <th className="border p-2">User</th>
-                            <th className="border p-2">Amount</th>
-                            <th className="border p-2">Status</th>
-                            <th className="border p-2">Actions</th>
+                        <tr className="bg-gray-200 text-gray-700">
+                            <th className="border p-4 text-left">User</th>
+                            <th className="border p-4 text-left">Amount</th>
+                            <th className="border p-4 text-left">Status</th>
+                            <th className="border p-4 text-left">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {payments.map((payment) => (
-                            <tr key={payment._id} className="border">
-                                <td className="p-2 border">{payment.userId?.name || "Unknown"}</td>
-                                <td className="p-2 border">${payment.amount}</td>
-                                <td className="p-2 border">
+                            <tr key={payment._id} className="border-b hover:bg-gray-100">
+                                <td className="p-4">{payment.userId?.name || "Unknown"}</td>
+                                <td className="p-4">{payment.amount}</td>
+                                <td className="p-4">
                                     <select
                                         value={payment.status}
                                         onChange={(e) => handleStatusChange(payment._id, e.target.value)}
-                                        className="border p-1 rounded"
+                                        className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="Pending">Pending</option>
                                         <option value="Completed">Completed</option>
                                         <option value="Refunded">Refunded</option>
                                     </select>
                                 </td>
-                                <td className="p-2 border">
+                                <td className="p-4">
                                     <button
                                         onClick={() => handleDelete(payment._id)}
-                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-300"
                                     >
                                         Delete
                                     </button>

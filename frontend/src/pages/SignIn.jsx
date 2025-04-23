@@ -9,12 +9,15 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // New error state
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(""); // Clear previous error
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", {
         email,
@@ -25,6 +28,10 @@ const SignIn = () => {
       navigate("/");
     } catch (error) {
       console.error("Login failed:", error);
+      setError(
+        error.response?.data?.message ||
+        "Invalid email or password. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -47,6 +54,13 @@ const SignIn = () => {
             Create an account
           </Link>
         </p>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm mb-4">
+            {error}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSignIn} className="space-y-5">

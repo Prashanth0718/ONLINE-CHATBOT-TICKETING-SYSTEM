@@ -14,14 +14,22 @@ exports.getAllUsers = async (req, res) => {
 
 // Update User (Admin Only)
 exports.updateUser = async (req, res) => {
-  const { _id, name, role } = req.body;
+  const { _id, name, email, phone, address, dob, city, country, role } = req.body;
 
   try {
     const user = await User.findById(_id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // Update user fields
     user.name = name;
+    user.email = email;
+    user.phone = phone;
+    user.address = address;
+    user.dob = dob;
+    user.city = city;
+    user.country = country;
     user.role = role;
+
     await user.save();
 
     res.json({ message: "User updated successfully", user });
@@ -30,6 +38,7 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // Reset User Password (Admin Only)
 exports.resetUserPassword = async (req, res) => {

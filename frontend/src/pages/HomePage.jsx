@@ -94,24 +94,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-darkBlue text-white py-8">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm">© 2025 TicketBooking. All rights reserved.</p>
-          <div className="flex space-x-6">
-            <Link to="/" className="hover:text-gold transition">Home</Link>
-            <Link to="/book-ticket" className="hover:text-gold transition">Book Ticket</Link>
-            <Link to="/contact" className="hover:text-gold transition">Contact</Link>
-          </div>
-          <div className="flex space-x-6">
-            {["facebook", "twitter", "instagram"].map((social, index) => (
-              <a key={index} href={`https://${social}.com`} className="hover:text-gold transition">
-                <i className={`fab fa-${social} text-xl`}></i>
-              </a>
-            ))}
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
 };

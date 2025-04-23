@@ -58,16 +58,33 @@ const UserManagement = () => {
   const handleUpdateUser = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put("http://localhost:5000/api/admin/users/update", editingUser, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  
+      // Make sure the _id is included in the request
+      if (!editingUser._id) {
+        console.error("User ID is missing.");
+        return;
+      }
+  
+      console.log("Sending data:", editingUser);
+  
+      // PUT request to backend with editingUser data (including _id)
+      await axios.put(
+        "http://localhost:5000/api/admin/users/update", 
+        editingUser, // Send the whole user object
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+  
+      // After update, fetch the updated list of users and reset modal state
       fetchUsers();
       setShowModal(false);
       setEditingUser(null);
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("Error updating user:", error.response?.data || error.message);
     }
   };
+  
 
   const resetPassword = async (id) => {
     try {
@@ -333,35 +350,93 @@ const handleDeleteUser = async (userId) => {
             )}
 
         {/* Edit User Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-5 rounded-lg shadow-lg w-96">
-              <h3 className="text-lg font-semibold mb-3">Edit User</h3>
-              <input
-                type="text"
-                value={editingUser.name}
-                onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
-                className="border p-2 rounded w-full mb-2"
-              />
-              <input
-                type="email"
-                value={editingUser.email}
-                onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                className="border p-2 rounded w-full mb-2"
-              />
-              <select
-                value={editingUser.role}
-                onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
-                className="border p-2 rounded w-full mb-2"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button onClick={handleUpdateUser} className="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
-              <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-500 text-white rounded ml-2">Cancel</button>
-            </div>
-          </div>
-        )}
+{showModal && (
+  <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-5 rounded-lg shadow-lg w-96 overflow-y-auto max-h-screen">
+      <h3 className="text-lg font-semibold mb-3">Edit User</h3>
+
+      <input
+        type="text"
+        value={editingUser.name}
+        onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+        placeholder="Name"
+        className="border p-2 rounded w-full mb-2"
+      />
+
+      <input
+        type="email"
+        value={editingUser.email}
+        onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+        placeholder="Email"
+        className="border p-2 rounded w-full mb-2"
+      />
+
+      <input
+        type="text"
+        value={editingUser.phone}
+        onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
+        placeholder="Phone"
+        className="border p-2 rounded w-full mb-2"
+      />
+
+      <input
+        type="text"
+        value={editingUser.address}
+        onChange={(e) => setEditingUser({ ...editingUser, address: e.target.value })}
+        placeholder="Address"
+        className="border p-2 rounded w-full mb-2"
+      />
+
+      <input
+        type="date"
+        value={editingUser.dob?.substring(0, 10)} // Format for date input
+        onChange={(e) => setEditingUser({ ...editingUser, dob: e.target.value })}
+        className="border p-2 rounded w-full mb-2"
+      />
+
+      <input
+        type="text"
+        value={editingUser.city}
+        onChange={(e) => setEditingUser({ ...editingUser, city: e.target.value })}
+        placeholder="City"
+        className="border p-2 rounded w-full mb-2"
+      />
+
+      <input
+        type="text"
+        value={editingUser.country}
+        onChange={(e) => setEditingUser({ ...editingUser, country: e.target.value })}
+        placeholder="Country"
+        className="border p-2 rounded w-full mb-2"
+      />
+
+      <select
+        value={editingUser.role}
+        onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+        className="border p-2 rounded w-full mb-4"
+      >
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <div className="flex justify-end">
+        <button
+          onClick={handleUpdateUser}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Save
+        </button>
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 bg-gray-500 text-white rounded ml-2"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
         
     </div>
   );

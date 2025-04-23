@@ -12,7 +12,7 @@ const {
 // ✅ Password Change Rate Limiter (Security Feature)
 const passwordChangeLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5, // Limit password changes to 5 times per window
+  max: 10, // Limit password changes to 5 times per window
   message: "⚠ Too many password change attempts. Try again later.",
 });
 

@@ -6,10 +6,16 @@ import { motion } from "framer-motion";
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [dob, setDob] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
@@ -17,9 +23,10 @@ const SignUp = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setMessage(null);
+    setFieldErrors({});
 
     if (password !== confirmPassword) {
-      setMessage("❌ Passwords do not match!");
+      setFieldErrors({ confirmPassword: "❌ Passwords do not match." });
       return;
     }
 
@@ -28,18 +35,30 @@ const SignUp = () => {
       await axios.post("http://localhost:5000/api/auth/register", {
         name,
         email,
+        phone,
+        address,
+        dob,
+        city,
+        country,
         password,
       });
 
       setMessage("✅ Account created successfully! Redirecting...");
       setTimeout(() => navigate("/signin"), 2000);
     } catch (error) {
-      setMessage("❌ Registration failed. Try again.");
+      if (error.response && error.response.data?.errors) {
+        setFieldErrors(error.response.data.errors);
+      } else {
+        setMessage("❌ Registration failed. Try again.");
+      }
       console.error("Signup error:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const clearFieldError = (field) =>
+    setFieldErrors((prev) => ({ ...prev, [field]: null }));
 
   return (
     <motion.div
@@ -48,7 +67,6 @@ const SignUp = () => {
       className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-300"
     >
       <div className="bg-white shadow-xl rounded-2xl p-8 w-[400px]">
-        {/* Header */}
         <h2 className="text-3xl font-bold text-gray-900 text-center mb-2">
           ✨ Create Your Free Account
         </h2>
@@ -59,7 +77,6 @@ const SignUp = () => {
           </Link>
         </p>
 
-        {/* Message Display */}
         {message && (
           <p
             className={`text-center font-semibold text-sm mb-4 ${
@@ -70,39 +87,126 @@ const SignUp = () => {
           </p>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSignUp} className="space-y-5">
-          {/* Name Input */}
+          {/* Name */}
           <div className="relative">
             <input
               type="text"
               placeholder="Full Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                clearFieldError("name");
+              }}
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
               required
             />
+            {fieldErrors.name && <p className="text-sm text-red-600 mt-1">{fieldErrors.name}</p>}
           </div>
 
-          {/* Email Input */}
+          {/* Email */}
           <div className="relative">
             <input
               type="email"
               placeholder="Email Address"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearFieldError("email");
+              }}
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
               required
             />
+            {fieldErrors.email && <p className="text-sm text-red-600 mt-1">{fieldErrors.email}</p>}
           </div>
 
-          {/* Password Input */}
+          {/* Phone */}
+          <div className="relative">
+            <input
+              type="tel"
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                clearFieldError("phone");
+              }}
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
+              required
+            />
+            {fieldErrors.phone && <p className="text-sm text-red-600 mt-1">{fieldErrors.phone}</p>}
+          </div>
+
+          {/* Address */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Address"
+              value={address}
+              onChange={(e) => {
+                setAddress(e.target.value);
+                clearFieldError("address");
+              }}
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
+            />
+            {fieldErrors.address && <p className="text-sm text-red-600 mt-1">{fieldErrors.address}</p>}
+          </div>
+
+          {/* Date of Birth */}
+          <div className="relative">
+            <input
+              type="date"
+              placeholder="Date of Birth"
+              value={dob}
+              onChange={(e) => {
+                setDob(e.target.value);
+                clearFieldError("dob");
+              }}
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
+              required
+            />
+            {fieldErrors.dob && <p className="text-sm text-red-600 mt-1">{fieldErrors.dob}</p>}
+          </div>
+
+          {/* City */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="City"
+              value={city}
+              onChange={(e) => {
+                setCity(e.target.value);
+                clearFieldError("city");
+              }}
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
+            />
+            {fieldErrors.city && <p className="text-sm text-red-600 mt-1">{fieldErrors.city}</p>}
+          </div>
+
+          {/* Country */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Country"
+              value={country}
+              onChange={(e) => {
+                setCountry(e.target.value);
+                clearFieldError("country");
+              }}
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
+            />
+            {fieldErrors.country && <p className="text-sm text-red-600 mt-1">{fieldErrors.country}</p>}
+          </div>
+
+          {/* Password */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Create Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearFieldError("password");
+              }}
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
               required
             />
@@ -112,15 +216,19 @@ const SignUp = () => {
             >
               {showPassword ? "🙈" : "👁️"}
             </span>
+            {fieldErrors.password && <p className="text-sm text-red-600 mt-1">{fieldErrors.password}</p>}
           </div>
 
-          {/* Confirm Password Input */}
+          {/* Confirm Password */}
           <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                clearFieldError("confirmPassword");
+              }}
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
               required
             />
@@ -130,9 +238,12 @@ const SignUp = () => {
             >
               {showConfirmPassword ? "🙈" : "👁️"}
             </span>
+            {fieldErrors.confirmPassword && (
+              <p className="text-sm text-red-600 mt-1">{fieldErrors.confirmPassword}</p>
+            )}
           </div>
 
-          {/* Sign Up Button */}
+          {/* Submit */}
           <button
             type="submit"
             className={`w-full py-3 text-lg font-semibold text-white rounded-lg transition-all duration-300 ${

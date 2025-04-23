@@ -20,6 +20,8 @@ const Chatbot = () => {
     const chatEndRef = useRef(null);
     const [darkMode, setDarkMode] = useState(false);
     const [language, setLanguage] = useState("en"); // default to English
+    const inputRef = useRef(null);
+
     
 
     const sendMessage = async (message) => {
@@ -30,6 +32,7 @@ const Chatbot = () => {
             token = await refreshToken();
             if (!token) {
                 alert("Session expired. Please log in again.");
+                navigate("/signin");
                 return;
             }
         }
@@ -37,6 +40,7 @@ const Chatbot = () => {
         const newMessages = [...messages, { text: message, sender: "user" }];
         setMessages(newMessages);
         setUserMessage("");
+        //inputRef.current?.focus();
         setIsTyping(true);
 
         try {
@@ -153,6 +157,7 @@ const Chatbot = () => {
             return null;
         }
     };
+    
 
     useEffect(() => {
         if (messages.length === 0) {
@@ -161,8 +166,9 @@ const Chatbot = () => {
             ]);
         }
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        inputRef.current?.focus();
     }, [messages]);
-
+    
     // useEffect(() => {
     //     if (messages.length === 0) {
     //         setMessages([
@@ -223,45 +229,45 @@ const Chatbot = () => {
                                 : `${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`
                         }`}>
                             <ReactMarkdown
-  components={{
-    h1: ({ children }) => <h1 className="text-2xl font-bold mb-2">{children}</h1>,
-    h2: ({ children }) => <h2 className="text-xl font-semibold mb-2">{children}</h2>,
-    p: ({ children }) => <p className="mb-1">{children}</p>,
-    ul: ({ children }) => <ul className="list-disc list-inside mb-2">{children}</ul>,
-    li: ({ children }) => <li className="ml-4">{children}</li>,
-    strong: ({ children }) => <strong className="font-semibold text-blue-600">{children}</strong>,
-    em: ({ children }) => <em className="italic text-purple-500">{children}</em>,
-    a: ({ href, children }) => (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline text-blue-500 hover:text-blue-700"
-      >
-        {children}
-      </a>
-    ),
-    code({ node, inline, className, children, ...props }) {
-        const match = /language-(\w+)/.exec(className || '');
-        return !inline && match ? (
-          <SyntaxHighlighter
-            style={oneDark}
-            language={match[1]}
-            PreTag="div"
-            {...props}
-            className="rounded-lg my-2 text-sm"
-          >
-            {String(children).replace(/\n$/, '')}
-          </SyntaxHighlighter>
-        ) : (
-          <code className="bg-gray-200 text-pink-600 px-1 py-0.5 rounded text-sm font-mono">{children}</code>
-        );
-      }
-      
-  }}
->
-{emojify(msg.text)}
-</ReactMarkdown>
+                            components={{
+                                h1: ({ children }) => <h1 className="text-2xl font-bold mb-2">{children}</h1>,
+                                h2: ({ children }) => <h2 className="text-xl font-semibold mb-2">{children}</h2>,
+                                p: ({ children }) => <p className="mb-1">{children}</p>,
+                                ul: ({ children }) => <ul className="list-disc list-inside mb-2">{children}</ul>,
+                                li: ({ children }) => <li className="ml-4">{children}</li>,
+                                strong: ({ children }) => <strong className="font-semibold text-blue-600">{children}</strong>,
+                                em: ({ children }) => <em className="italic text-purple-500">{children}</em>,
+                                a: ({ href, children }) => (
+                                <a
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="underline text-blue-500 hover:text-blue-700"
+                                >
+                                    {children}
+                                </a>
+                                ),
+                                code({ node, inline, className, children, ...props }) {
+                                    const match = /language-(\w+)/.exec(className || '');
+                                    return !inline && match ? (
+                                    <SyntaxHighlighter
+                                        style={oneDark}
+                                        language={match[1]}
+                                        PreTag="div"
+                                        {...props}
+                                        className="rounded-lg my-2 text-sm"
+                                    >
+                                        {String(children).replace(/\n$/, '')}
+                                    </SyntaxHighlighter>
+                                    ) : (
+                                    <code className="bg-gray-200 text-pink-600 px-1 py-0.5 rounded text-sm font-mono">{children}</code>
+                                    );
+                                }
+                                
+                            }}
+                            >
+                            {emojify(msg.text)}
+                            </ReactMarkdown>
 
 
                         </div>
@@ -312,6 +318,7 @@ const Chatbot = () => {
             {/* Input */}
             <div className="mt-4 flex">
                 <input
+                    ref={inputRef}
                     type="text"
                     placeholder="Type a message..."
                     value={userMessage}

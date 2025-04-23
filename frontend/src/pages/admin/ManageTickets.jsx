@@ -33,6 +33,8 @@ const ManageTickets = () => {
     };
 
     const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this ticket?")) return;
+
         try {
             const token = localStorage.getItem("token");
     
@@ -51,7 +53,6 @@ const ManageTickets = () => {
             alert("Error deleting ticket!");
         }
     };
-    
 
     const handleUpdate = async (id, newStatus) => {
         try {
@@ -79,60 +80,55 @@ const ManageTickets = () => {
             alert("Error updating ticket!");
         }
     };
-    
-    
 
-    if (loading) return <p>Loading tickets...</p>;
-    if (error) return <p>{error}</p>;
+    if (loading) return <p className="text-center">Loading tickets...</p>;
+    if (error) return <p className="text-center text-red-600">{error}</p>;
 
     return (
         <div className="p-6">
             <h2 className="text-xl font-bold mb-4">Manage Tickets</h2>
+            
             <table className="min-w-full bg-white border border-gray-300">
-            <thead>
-            <tr className="bg-gray-200">
-                <th className="border px-4 py-2">User</th>
-                <th className="border px-4 py-2">Museum</th>
-                <th className="border px-4 py-2">Date</th>
-                <th className="border px-4 py-2">Status</th>
-                <th className="border px-4 py-2">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {tickets.map((ticket) => (
-                <tr key={ticket._id}>
-                <td className="border px-4 py-2">
-                    {ticket.userId?.name || "Unknown"}
-                </td>
-                <td className="border px-4 py-2">{ticket.museumName}</td>
-                <td className="border px-4 py-2">
-                    {new Date(ticket.date).toLocaleDateString()}
-                </td>
-                <td className="border px-4 py-2">{ticket.status}</td>
-                <td className="border px-4 py-2">
-                    <button
-                    className="bg-blue-500 text-white px-3 py-1 mr-2"
-                    onClick={() =>
-                        handleUpdate(
-                        ticket._id,
-                        ticket.status === "booked" ? "cancelled" : "booked"
-                        )
-                    }
-                    >
-                    {ticket.status === "booked" ? "Cancel" : "Rebook"}
-                    </button>
-                    <button
-                    className="bg-red-500 text-white px-3 py-1"
-                    onClick={() => handleDelete(ticket._id)}
-                    >
-                    Delete
-                    </button>
-                </td>
-                </tr>
-            ))}
-            </tbody>
-
-
+                <thead>
+                    <tr className="bg-gray-200">
+                        <th className="border px-4 py-2">User</th>
+                        <th className="border px-4 py-2">Museum</th>
+                        <th className="border px-4 py-2">Date</th>
+                        <th className="border px-4 py-2">Status</th>
+                        <th className="border px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tickets.map((ticket) => (
+                        <tr key={ticket._id}>
+                            <td className="border px-4 py-2">{ticket.userId?.name || "Unknown"}</td>
+                            <td className="border px-4 py-2">{ticket.museumName}</td>
+                            <td className="border px-4 py-2">
+                                {new Date(ticket.date).toLocaleDateString()}
+                            </td>
+                            <td className="border px-4 py-2">{ticket.status}</td>
+                            <td className="border px-4 py-2 flex space-x-2">
+                                <button
+                                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                                    onClick={() =>
+                                        handleUpdate(
+                                            ticket._id,
+                                            ticket.status === "booked" ? "cancelled" : "booked"
+                                        )
+                                    }
+                                >
+                                    {ticket.status === "booked" ? "Cancel" : "Rebook"}
+                                </button>
+                                <button
+                                    className="bg-red-500 text-white px-3 py-1 rounded"
+                                    onClick={() => handleDelete(ticket._id)}
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
             </table>
         </div>
     );
