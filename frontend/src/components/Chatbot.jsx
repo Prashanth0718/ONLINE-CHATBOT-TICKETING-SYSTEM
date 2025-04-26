@@ -7,6 +7,7 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import emoji from 'emoji-dictionary';
 import { Sun, Moon, Languages, Send, Bot, Calendar } from 'lucide-react';
 import TypingDots from "../components/TypingDots";
+import Toast from "../components/ui/Toast";
 
 const emojify = (text) =>
   text.replace(/:([a-zA-Z0-9_+-]+):/g, (match, name) => emoji.getUnicode(name) || match);
@@ -20,6 +21,12 @@ const Chatbot = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState("en");
   const inputRef = useRef(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const sendMessage = async (message) => {
     if (!message.trim()) return;
@@ -28,7 +35,7 @@ const Chatbot = () => {
     if (isTokenExpired(token)) {
       token = await refreshToken();
       if (!token) {
-        alert("Session expired. Please logout and login again.");
+        showToast("Session expired. Please login again.", "error");
         navigate("/signin");
         return;
       }
@@ -101,7 +108,7 @@ const Chatbot = () => {
 
           if (verifyResponse.data.message === "Payment successful & Ticket booked") {
             setTimeout(() => {
-              alert("✅ Ticket successfully booked!");
+              showToast("Ticket successfully booked!");
               setMessages(prev => [
                 ...prev,
                 {
@@ -113,11 +120,11 @@ const Chatbot = () => {
               setSession(prev => ({ ...prev, step: "main_menu" }));
             }, 500);
           } else {
-            alert("❌ Payment verification failed.");
+            showToast("Payment verification failed.", "error");
           }
         } catch (error) {
           console.error("Payment verification error:", error);
-          alert("❌ Error verifying payment.");
+          showToast("Error verifying payment.", "error");
         }
       },
       prefill: { email: "user@example.com" },
@@ -163,6 +170,7 @@ const Chatbot = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="max-w-4xl mx-auto"
       >
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -324,6 +332,14 @@ const Chatbot = () => {
           </div>
         </div>
       </motion.div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

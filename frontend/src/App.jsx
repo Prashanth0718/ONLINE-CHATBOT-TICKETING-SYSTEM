@@ -7,7 +7,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import MyTickets from "./pages/MyTickets";
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/PrivateRoute";
-
+import PlanVisit from './pages/PlanVisit';
 //import Chatbot from "./components/Chatbot";
 
 import ProfilePage from "./pages/ProfilePage";
@@ -31,7 +31,7 @@ function App() {
             <Route path="/book-ticket" element={<BookTicket />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/chatbot" element={<ChatbotPage />} />
-            
+            <Route path="/plan-visit" element={<PlanVisit />} />
             
             
             {/* ✅ Protected Routes */}
