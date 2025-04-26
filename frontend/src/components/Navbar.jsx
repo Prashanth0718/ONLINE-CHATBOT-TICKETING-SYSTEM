@@ -2,16 +2,19 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ProfileDropdown from "./ProfileDropdown";
 import { motion } from "framer-motion";
-import { Ticket, Home, Calendar, MessageSquare, Ticket as TicketIcon, Settings } from 'lucide-react';
 
+import { Ticket, Home, Calendar, MessageSquare, Ticket as TicketIcon, Settings, Info, Map } from 'lucide-react';
 const Navbar = () => {
   const { isLoggedIn, role } = useAuth();
 
   const navItems = [
+
     { name: "Home", to: "/", icon: Home },
+    { name: "Plan Visit", to: "/plan-visit", icon: Map },
     // { name: "Book Ticket", to: "/book-ticket", icon: Calendar },
     { name: "Chatbot", to: "/chatbot", icon: MessageSquare },
     { name: "My Tickets", to: "/my-tickets", icon: TicketIcon },
+    { name: "About", to: "/about", icon: Info },
   ];
 
   if (role === "admin") {
