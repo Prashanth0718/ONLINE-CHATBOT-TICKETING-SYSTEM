@@ -71,6 +71,7 @@ const handlePaymentStep = async ({ userMessage, session, response }) => {
   } catch (error) {
     console.error("❌ Razorpay Payment Error:", error);
     response.message = "⚠️ Failed to initiate payment. Please try again later.";
+    response.options = ["⬅️ Go Back", "Restart Chat 🔄"];
     session.step = "main_menu";
   }
 

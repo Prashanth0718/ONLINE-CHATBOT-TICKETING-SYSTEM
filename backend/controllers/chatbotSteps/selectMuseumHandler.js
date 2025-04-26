@@ -14,8 +14,6 @@ const handleSelectMuseum = async ({ userMessage, session, response }) => {
       response.message = "⚠️ Museum not found. Please select a valid museum from the list below:";
       response.options = museums.map(m => m.name.trim());
       
-      
-
       session.step = "select_museum";
       return;
     }

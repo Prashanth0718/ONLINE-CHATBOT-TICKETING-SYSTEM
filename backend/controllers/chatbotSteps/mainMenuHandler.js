@@ -32,7 +32,8 @@ if (
       "Cancel my ticket ❌",
       "Ask something else ❓",
       "Restart Chat 🔄"
-    ];
+    ];    
+    
     session.step = "main_menu";
     return;
   }
