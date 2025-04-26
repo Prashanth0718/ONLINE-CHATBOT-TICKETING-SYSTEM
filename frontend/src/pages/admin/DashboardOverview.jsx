@@ -93,7 +93,7 @@ const DashboardOverview = () => {
             >
               <h4 className="text-xl font-semibold">Total Revenue</h4>
               <p className="text-3xl font-bold">
-                ${analytics.totalRevenue ? analytics.totalRevenue.toFixed(2) : "0.00"}
+              ₹{analytics.totalRevenue ? analytics.totalRevenue.toFixed(2) : "0.00"}
               </p>
             </motion.div>
 

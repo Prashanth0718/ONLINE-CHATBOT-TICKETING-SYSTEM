@@ -1,263 +1,80 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { motion } from "framer-motion";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate, Link } from 'react-router-dom';
+import { UserCircle2, Sparkles, Ticket } from 'lucide-react';
+import SignUpForm from '../components/SignUpForm';
 
 const SignUp = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [dob, setDob] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    setMessage(null);
-    setFieldErrors({});
-
-    if (password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: "❌ Passwords do not match." });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await axios.post("http://localhost:5000/api/auth/register", {
-        name,
-        email,
-        phone,
-        address,
-        dob,
-        city,
-        country,
-        password,
-      });
-
-      setMessage("✅ Account created successfully! Redirecting...");
-      setTimeout(() => navigate("/signin"), 2000);
-    } catch (error) {
-      if (error.response && error.response.data?.errors) {
-        setFieldErrors(error.response.data.errors);
-      } else {
-        setMessage("❌ Registration failed. Try again.");
-      }
-      console.error("Signup error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const clearFieldError = (field) =>
-    setFieldErrors((prev) => ({ ...prev, [field]: null }));
-
+  
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-300"
-    >
-      <div className="bg-white shadow-xl rounded-2xl p-8 w-[400px]">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-2">
-          ✨ Create Your Free Account
-        </h2>
-        <p className="text-gray-500 text-center mb-4">
-          Already have an account?{" "}
-          <Link to="/signin" className="text-blue-600 font-semibold hover:underline">
-            Sign in
-          </Link>
-        </p>
-
-        {message && (
-          <p
-            className={`text-center font-semibold text-sm mb-4 ${
-              message.includes("✅") ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {message}
-          </p>
-        )}
-
-        <form onSubmit={handleSignUp} className="space-y-5">
-          {/* Name */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                clearFieldError("name");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-              required
-            />
-            {fieldErrors.name && <p className="text-sm text-red-600 mt-1">{fieldErrors.name}</p>}
+    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-lg relative"
+      >
+        {/* Decorative elements */}
+        <div className="absolute -top-10 -left-10 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
+        <div className="absolute top-1/3 right-0 w-16 h-16 bg-violet-500/20 rounded-full blur-xl"></div>
+        
+        {/* Main card */}
+        <motion.div 
+          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-blue-100"
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <div className="relative overflow-hidden">
+            {/* Header with gradient */}
+            <div className="h-16 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center relative">
+              <div className="text-white font-medium flex items-center z-10">
+                <Ticket className="h-5 w-5 mr-2" />
+                <span>Museum Experience</span>
+              </div>
+            </div>
+            
+            <div className="px-8 py-8">
+              <div className="flex flex-col items-center mb-8">
+                <motion.div 
+                  className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center mb-4 shadow-lg shadow-blue-200"
+                  initial={{ scale: 0.8, rotate: -10 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
+                >
+                  <UserCircle2 size={40} className="text-white" />
+                </motion.div>
+                
+                <motion.h2 
+                  className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 mb-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  Create Your Account
+                </motion.h2>
+                
+                <motion.p 
+                  className="text-gray-500 text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  Already have an account?{" "}
+                  <Link to="/signin" className="text-blue-600 font-semibold hover:text-blue-800 transition-colors">
+                    Sign in
+                  </Link>
+                </motion.p>
+              </div>
+              
+              <SignUpForm navigate={navigate} />
+            </div>
           </div>
-
-          {/* Email */}
-          <div className="relative">
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                clearFieldError("email");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-              required
-            />
-            {fieldErrors.email && <p className="text-sm text-red-600 mt-1">{fieldErrors.email}</p>}
-          </div>
-
-          {/* Phone */}
-          <div className="relative">
-            <input
-              type="tel"
-              placeholder="Phone Number"
-              value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
-                clearFieldError("phone");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-              required
-            />
-            {fieldErrors.phone && <p className="text-sm text-red-600 mt-1">{fieldErrors.phone}</p>}
-          </div>
-
-          {/* Address */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Address"
-              value={address}
-              onChange={(e) => {
-                setAddress(e.target.value);
-                clearFieldError("address");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-            />
-            {fieldErrors.address && <p className="text-sm text-red-600 mt-1">{fieldErrors.address}</p>}
-          </div>
-
-          {/* Date of Birth */}
-          <div className="relative">
-            <input
-              type="date"
-              placeholder="Date of Birth"
-              value={dob}
-              onChange={(e) => {
-                setDob(e.target.value);
-                clearFieldError("dob");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-              required
-            />
-            {fieldErrors.dob && <p className="text-sm text-red-600 mt-1">{fieldErrors.dob}</p>}
-          </div>
-
-          {/* City */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="City"
-              value={city}
-              onChange={(e) => {
-                setCity(e.target.value);
-                clearFieldError("city");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-            />
-            {fieldErrors.city && <p className="text-sm text-red-600 mt-1">{fieldErrors.city}</p>}
-          </div>
-
-          {/* Country */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Country"
-              value={country}
-              onChange={(e) => {
-                setCountry(e.target.value);
-                clearFieldError("country");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-            />
-            {fieldErrors.country && <p className="text-sm text-red-600 mt-1">{fieldErrors.country}</p>}
-          </div>
-
-          {/* Password */}
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Create Password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                clearFieldError("password");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-              required
-            />
-            <span
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 cursor-pointer text-gray-500"
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
-            {fieldErrors.password && <p className="text-sm text-red-600 mt-1">{fieldErrors.password}</p>}
-          </div>
-
-          {/* Confirm Password */}
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                clearFieldError("confirmPassword");
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-50"
-              required
-            />
-            <span
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-3 cursor-pointer text-gray-500"
-            >
-              {showConfirmPassword ? "🙈" : "👁️"}
-            </span>
-            {fieldErrors.confirmPassword && (
-              <p className="text-sm text-red-600 mt-1">{fieldErrors.confirmPassword}</p>
-            )}
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className={`w-full py-3 text-lg font-semibold text-white rounded-lg transition-all duration-300 ${
-              loading
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800"
-            }`}
-            disabled={loading}
-          >
-            {loading ? "Creating account..." : "🚀 Sign Up"}
-          </button>
-        </form>
-      </div>
-    </motion.div>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };
 

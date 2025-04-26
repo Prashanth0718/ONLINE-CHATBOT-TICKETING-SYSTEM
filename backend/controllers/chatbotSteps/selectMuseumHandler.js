@@ -12,11 +12,9 @@ const handleSelectMuseum = async ({ userMessage, session, response }) => {
 
     if (!matchedMuseum) {
       response.message = "⚠️ Museum not found. Please select a valid museum from the list below:";
-
-      // Enhanced options view
-      response.options = museums.map(museum =>
-        `🏛️ ${museum.name.trim()} - 📍 ${museum.location} - 💵 ₹${museum.ticketPrice}`
-      );
+      response.options = museums.map(m => m.name.trim());
+      
+      
 
       session.step = "select_museum";
       return;

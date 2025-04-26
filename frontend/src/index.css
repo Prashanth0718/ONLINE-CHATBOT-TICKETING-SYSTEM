@@ -10,3 +10,28 @@
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
   }
+
+  @layer base {
+    html {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    body {
+      @apply antialiased text-gray-800;
+    }
+    
+    /* Custom date input styling */
+    input[type="date"] {
+      @apply appearance-none;
+    }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      @apply opacity-60 hover:opacity-100 cursor-pointer;
+    }
+  }
+  
+  @layer utilities {
+    .glassmorphism {
+      @apply bg-white bg-opacity-70 backdrop-blur-lg backdrop-saturate-150 border border-white border-opacity-20;
+    }
+  }

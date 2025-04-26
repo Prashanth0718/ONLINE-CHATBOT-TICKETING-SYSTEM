@@ -7,7 +7,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import MyTickets from "./pages/MyTickets";
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/PrivateRoute";
+
 //import Chatbot from "./components/Chatbot";
+
 import ProfilePage from "./pages/ProfilePage";
 import PaymentPage from "./pages/PaymentPage";
 import BookTicket from "./pages/BookTicket";
@@ -29,6 +31,8 @@ function App() {
             <Route path="/book-ticket" element={<BookTicket />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/chatbot" element={<ChatbotPage />} />
+            
+            
             
             {/* ✅ Protected Routes */}
             <Route element={<PrivateRoute allowedRoles={["user", "admin"]} />}>

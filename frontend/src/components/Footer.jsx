@@ -1,44 +1,140 @@
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { Facebook, Twitter, Github, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+
+const navigation = {
+  main: [
+    { name: "About Us", href: "/" },
+    { name: "Exhibitions", href: "/" },
+    { name: "Events", href: "/" },
+    { name: "Contact", href: "/" },
+    { name: "Blog", href: "/" },
+  ],
+  support: [
+    { name: "Help Center", href: "/" },
+    { name: "Terms of Service", href: "/" },
+    { name: "Privacy Policy", href: "/" },
+    { name: "Cookie Policy", href: "/" },
+  ],
+  social: [
+    { name: "Facebook", href: "#", icon: Facebook },
+    { name: "Twitter", href: "#", icon: Twitter },
+    { name: "GitHub", href: "#", icon: Github },
+    { name: "Instagram", href: "#", icon: Instagram },
+  ],
+  contact: [
+    { icon: Mail, text: "support@museumgo.com" },
+    { icon: Phone, text: "+1 (555) 123-4567" },
+    { icon: MapPin, text: "123 Museum Street, Art City, AC 12345" },
+  ],
+};
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 py-10 mt-16">
-      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-        
-        {/* Brand Info */}
-        <div>
-          <h3 className="text-2xl font-bold text-white mb-3">🎟️ TicketBooking</h3>
-          <p className="text-sm">
-            Book tickets to your favorite museums with ease and multilingual support. Secure. Simple. Smart.
-          </p>
-        </div>
+    <footer className="bg-white border-t border-gray-100">
+      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div className="space-y-4">
+            <Link
+              to="/"
+              className="flex items-center space-x-2 text-blue-600"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                </svg>
+              </div>
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                MuseumGo
+              </span>
+            </Link>
+            <p className="text-gray-500 text-sm">
+              Experience art and culture like never before. Book your museum visits easily and explore the world of creativity.
+            </p>
+          </div>
 
-        {/* Quick Links */}
-        <div>
-          <h4 className="text-xl font-semibold text-white mb-3">Quick Links</h4>
-          <ul className="space-y-2 text-sm">
-            <li><a href="/" className="hover:text-white transition">Home</a></li>
-            <li><a href="/museums" className="hover:text-white transition">Museums</a></li>
-            <li><a href="/profile" className="hover:text-white transition">My Account</a></li>
-            <li><a href="/contact" className="hover:text-white transition">Contact</a></li>
-          </ul>
-        </div>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+              Quick Links
+            </h3>
+            <ul className="space-y-3">
+              {navigation.main.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    to={item.href}
+                    className="text-gray-500 hover:text-blue-600 transition-colors duration-200 text-sm"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        {/* Social Media */}
-        <div>
-          <h4 className="text-xl font-semibold text-white mb-3">Follow Us</h4>
-          <div className="flex space-x-4 text-lg">
-            <a href="#" className="hover:text-blue-400 transition"><FaFacebookF /></a>
-            <a href="#" className="hover:text-sky-400 transition"><FaTwitter /></a>
-            <a href="#" className="hover:text-pink-400 transition"><FaInstagram /></a>
-            <a href="#" className="hover:text-blue-300 transition"><FaLinkedin /></a>
+          {/* Support */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+              Support
+            </h3>
+            <ul className="space-y-3">
+              {navigation.support.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    to={item.href}
+                    className="text-gray-500 hover:text-blue-600 transition-colors duration-200 text-sm"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+              Contact Us
+            </h3>
+            <ul className="space-y-3">
+              {navigation.contact.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <li key={index} className="flex items-start space-x-3 text-gray-500">
+                    <Icon className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                    <span className="text-sm">{item.text}</span>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
-      </div>
 
-      {/* Divider */}
-      <div className="border-t border-gray-700 mt-8 pt-6 text-sm text-gray-500 text-center">
-        © 2025 TicketBooking. All rights reserved.
+        {/* Bottom Section */}
+        <div className="mt-12 pt-8 border-t border-gray-100">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} MuseumGo. All rights reserved.
+            </p>
+            
+            {/* Social Links */}
+            <div className="flex space-x-4">
+              {navigation.social.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-400 hover:text-blue-600 transition-colors duration-200"
+                  >
+                    <span className="sr-only">{item.name}</span>
+                    <Icon className="h-5 w-5" />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

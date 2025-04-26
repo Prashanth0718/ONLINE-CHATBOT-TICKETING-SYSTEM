@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "antd": "^5.24.8",
     "axios": "^1.8.3",
     "chart.js": "^4.4.8",
+    "daisyui": "^5.0.28",
     "date-fns": "^4.1.0",
     "emoji-dictionary": "^1.0.12",
     "framer-motion": "^12.7.4",

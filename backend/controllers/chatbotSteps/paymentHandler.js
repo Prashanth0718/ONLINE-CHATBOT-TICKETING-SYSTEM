@@ -10,6 +10,7 @@ const razorpay = new Razorpay({
 const handlePaymentStep = async ({ userMessage, session, response }) => {
   if (typeof userMessage !== "string" || !userMessage.toLowerCase().includes("proceed to payment")) {
     response.message = "⚠️ Please click on 'Proceed to Payment 💳' to continue.";
+    response.options = ["Proceed to Payment 💳", "⬅️ Go Back"];
     return { session, response };
   }
 

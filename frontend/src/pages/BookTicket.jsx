@@ -16,6 +16,8 @@ const BookTicket = () => {
   const navigate = useNavigate();
 
   const handlePayment = async () => {
+    console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
+
     if (!museum || !date || visitors < 1) {
       alert("⚠️ Please fill in all details before proceeding.");
       return;
@@ -41,7 +43,6 @@ const BookTicket = () => {
         { amount: price, currency: "INR" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.amount,

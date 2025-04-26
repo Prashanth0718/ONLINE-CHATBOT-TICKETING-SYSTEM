@@ -390,6 +390,7 @@ const handleDeleteUser = async (userId) => {
       <input
         type="date"
         value={editingUser.dob?.substring(0, 10)} // Format for date input
+        max={new Date().toISOString().split("T")[0]}
         onChange={(e) => setEditingUser({ ...editingUser, dob: e.target.value })}
         className="border p-2 rounded w-full mb-2"
       />

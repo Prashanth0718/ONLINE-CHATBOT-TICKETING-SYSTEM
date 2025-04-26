@@ -65,7 +65,16 @@ if (
         });
         const tickets = ticketResponse.data;
         if (tickets.length === 0) {
-          response.message = "📭 You haven't booked any tickets yet!";
+          response.message = "📭 You haven't booked any tickets yet!\n\nNo worries—I'm here to help you get started. You can choose one of the options below:";
+          response.options = [
+            "Book a ticket 🎟️",
+            "Check my tickets 📜",
+            "Cancel my ticket ❌",
+            "Ask something else ❓",
+            "Restart Chat 🔄"
+          ];
+          session.step = "main_menu";
+          
         } else {
           let reply = "🎟️ *Your Booked Tickets:*\n\n";
           tickets.forEach((t, i) => {
@@ -96,7 +105,15 @@ if (
         const tickets = ticketResponse.data;
         session.tickets = tickets.filter(t => t.status !== "cancelled");
         if (session.tickets.length === 0) {
-          response.message = "📭 You have no active tickets to cancel.";
+          response.message = "📭 You have no active tickets to cancel!\n\nNo worries—there's still plenty you can do. Choose one of the options below:";
+          response.options = [
+            "Book a ticket 🎟️",
+            "Check my tickets 📜",
+            "Cancel my ticket ❌",
+            "Ask something else ❓",
+            "Restart Chat 🔄"
+          ];
+          session.step = "main_menu";
         } else {
           response.message = "Which ticket would you like to cancel? Select a number:";
           response.options = session.tickets.map((ticket, i) =>
