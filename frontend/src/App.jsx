@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/PrivateRoute";
 import PlanVisit from './pages/PlanVisit';
 //import Chatbot from "./components/Chatbot";
-
+import About from './pages/About';
 import ProfilePage from "./pages/ProfilePage";
 import PaymentPage from "./pages/PaymentPage";
 import BookTicket from "./pages/BookTicket";
@@ -32,7 +32,7 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/chatbot" element={<ChatbotPage />} />
             <Route path="/plan-visit" element={<PlanVisit />} />
-            
+            <Route path="/about" element={<About />} />
             
             {/* ✅ Protected Routes */}
             <Route element={<PrivateRoute allowedRoles={["user", "admin"]} />}>
