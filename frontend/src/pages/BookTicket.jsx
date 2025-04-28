@@ -1,25 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { CreditCard, Users, Calendar, Building, Loader } from "lucide-react";
 
-const museumPrices = {
-  "Louvre": 100,
-  "The British Museum": 150,
-  "Metropolitan Museum": 200,
-  "The National Gallery": 250,
-  "Uffizi Galleries": 300,
-  "State Hermitage": 350,
-  
-};
-
 const BookTicket = () => {
+  const [museumList, setMuseumList] = useState([]);
   const [museum, setMuseum] = useState("");
+  const [location, setLocation] = useState("");
+  const [ticketPrice, setTicketPrice] = useState(0);
+  const [availableTickets, setAvailableTickets] = useState(0);
   const [date, setDate] = useState("");
   const [visitors, setVisitors] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMuseums = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:5000/api/museums");
+        setMuseumList(data); // Set the fetched museums in state
+      } catch (error) {
+        console.error("Error fetching museums:", error);
+      }
+    };
+
+    fetchMuseums();
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -45,13 +52,21 @@ const BookTicket = () => {
     }
   };
 
+  const handleMuseumChange = (e) => {
+    const selectedMuseum = museumList.find(m => m.name === e.target.value);
+    setMuseum(selectedMuseum.name);
+    setLocation(selectedMuseum.location);
+    setTicketPrice(selectedMuseum.ticketPrice);
+    setAvailableTickets(selectedMuseum.availableTickets);
+  };
+
   const handlePayment = async () => {
     if (!museum || !date || visitors < 1) {
       alert("⚠️ Please fill in all details before proceeding.");
       return;
     }
 
-    const price = museumPrices[museum] * Number(visitors);
+    const price = ticketPrice * Number(visitors);
     setLoading(true);
 
     try {
@@ -161,18 +176,38 @@ const BookTicket = () => {
               <Building className="absolute left-3 top-3 text-gray-400" />
               <select
                 value={museum}
-                onChange={(e) => setMuseum(e.target.value)}
+                onChange={handleMuseumChange}
                 className="w-full pl-10 pr-4 py-3 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 required
               >
                 <option value="">Choose a museum</option>
-                {Object.entries(museumPrices).map(([name, price]) => (
-                  <option key={name} value={name}>
-                    {name} - ₹{price}
+                {museumList.map((museum) => (
+                  <option key={museum._id} value={museum.name}>
+                    {museum.name} - ₹{museum.ticketPrice} | {museum.location}
                   </option>
                 ))}
               </select>
             </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Museum Location</label>
+            <input
+              type="text"
+              value={location}
+              readOnly
+              className="w-full pl-4 pr-4 py-3 bg-gray-100 border rounded-xl focus:outline-none"
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Available Tickets</label>
+            <input
+              type="number"
+              value={availableTickets}
+              readOnly
+              className="w-full pl-4 pr-4 py-3 bg-gray-100 border rounded-xl focus:outline-none"
+            />
           </motion.div>
 
           <motion.div variants={itemVariants} className="space-y-2">
@@ -182,9 +217,8 @@ const BookTicket = () => {
               <input
                 type="date"
                 value={date}
-                onFocus={(e) => (e.target.type = "date")}
-                min={new Date().toISOString().split("T")[0]}
                 onChange={(e) => setDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]} // Ensures today's date or later is selected
                 className="w-full pl-10 pr-4 py-3 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 required
               />
