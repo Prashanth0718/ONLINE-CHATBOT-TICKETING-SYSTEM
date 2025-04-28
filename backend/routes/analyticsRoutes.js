@@ -2,26 +2,31 @@ const express = require("express");
 const router = express.Router();
 const analyticsController = require("../controllers/analyticsController");
 const { authMiddleware, authorizeRoles } = require("../middleware/authMiddleware");
-const { getAnalytics } = require("../controllers/analyticsController");
 
-router.get("/", authMiddleware, getAnalytics);
+// ✅ Analytics Route (User Analytics)
+router.get("/", authMiddleware, async (req, res) => {
+  try {
+    await analyticsController.getAnalytics(req, res);
+  } catch (error) {
+    console.error("❌ Error fetching analytics:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // ✅ Admin Dashboard Analytics Route (Only Admins)
 router.get(
-    "/admin-dashboard",
-    authMiddleware,
-    authorizeRoles("admin"),
-    async (req, res) => {
-      try {
-        // ✅ Call the function properly by passing `req` and `res`
-        await analyticsController.getAnalyticsData(req, res);
-      } catch (error) {
-        console.error("❌ Error fetching analytics:", error);
-        res.status(500).json({ message: "Server error" });
-      }
+  "/admin-dashboard",
+  authMiddleware,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      await analyticsController.getAnalyticsData(req, res);
+    } catch (error) {
+      console.error("❌ Error fetching analytics:", error);
+      res.status(500).json({ message: "Server error" });
     }
-  );
-  
-  
+  }
+);
 
 // ✅ Track Chatbot Queries (No Auth Required)
 router.post("/track-query", async (req, res) => {
@@ -33,21 +38,6 @@ router.post("/track-query", async (req, res) => {
   }
 });
 
-// ✅ Public Analytics Route (If needed)
-// router.get("/analytics", async (req, res) => {
-//     try {
-//       const analytics = await analyticsController.getAnalytics();
-//       if (!analytics) {
-//         return res.status(404).json({ message: "No analytics data available" });
-//       }
-//       res.json(analytics);
-//     } catch (error) {
-//       console.error("❌ Error fetching analytics:", error);
-//       res.status(500).json({ message: "Server error" });
-//     }
-//   });
-  
-
 // ✅ Museum Analytics (Admin Only)
 router.get(
   "/museum/:museumName",
@@ -56,7 +46,7 @@ router.get(
   async (req, res) => {
     try {
       const { museumName } = req.params;
-      const museumAnalytics = await analyticsController.getMuseumAnalytics(museumName);
+      const museumAnalytics = await analyticsController.getMuseumAnalytics(req, res);
 
       if (!museumAnalytics) {
         return res.status(404).json({ message: `No analytics found for museum: ${museumName}` });

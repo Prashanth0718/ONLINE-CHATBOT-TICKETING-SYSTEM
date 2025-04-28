@@ -128,44 +128,36 @@ exports.verifyPayment = async (req, res) => {
       return res.status(500).json({ message: "Failed to save ticket" });
     }
 
-    // 🔹 Update Analytics
+    // 📊 Updating Analytics
     console.log("📊 Updating Analytics...");
 
-    let analytics = await Analytics.findOne();
-    if (!analytics) {
-      console.log("⚠️ No analytics record found. Creating a new one...");
-      analytics = new Analytics({
-        totalBookings: 0,
-        totalRevenue: 0,
-        ticketBookings: 0,
-        chatbotQueries: 0,
-        museumBookings: {}
-      });
-    }
-
-    // 🔹 Ensure `museumBookings` exists as an object
-    if (!analytics.museumBookings || typeof analytics.museumBookings !== 'object') {
-      analytics.museumBookings = {}; // ✅ Initialize if missing
-    }
-
-    // 🔹 Increment values
-    analytics.totalBookings += 1;
-    analytics.ticketBookings += 1;
-    analytics.totalRevenue += price;
-    analytics.museumBookings[museumName] = (analytics.museumBookings[museumName] || 0) + 1;
-
-    // 🔹 Use `$set` to **force update museumBookings**
+    // Step 1: Directly update analytics using `findOneAndUpdate` method
     await Analytics.findOneAndUpdate(
       {},
       {
-        $inc: { totalBookings: 1, totalRevenue: price, ticketBookings: 1 },
-        $set: { [`museumBookings.${museumName}`]: analytics.museumBookings[museumName] }
+        $inc: {
+          totalBookings: 1,  // Increment totalBookings by 1
+          totalRevenue: price,  // Add `price` to totalRevenue
+          ticketBookings: 1,  // Increment ticketBookings by 1
+          [`museumBookings.${museumName}`]: 1  // Increment the specific museum's booking count by 1
+        }
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true }  // If no document exists, create one. Return the updated document.
     );
 
-    console.log(`✅ Analytics Updated: ${analytics.totalBookings} bookings, ₹${analytics.totalRevenue} revenue`);
-    console.log(`🏛️ Museum Bookings Updated:`, analytics.museumBookings);
+    // Step 2: Log the updated analytics for verification
+    console.log("✅ Analytics Updated");
+
+    const analytics = await Analytics.findOne({});
+    if (analytics) {
+      console.log(`📊 Total Bookings: ${analytics.totalBookings}, Total Revenue: ₹${analytics.totalRevenue}`);
+      console.log(`📊 Museum Bookings: ${JSON.stringify(analytics.museumBookings)}`);
+    } else {
+      console.log("❌ Analytics document not found");
+    } 
+
+
+
 
     res.status(200).json({ message: "Payment successful & Ticket booked", paymentId: razorpay_payment_id, ticket: savedTicket });
   } catch (error) {
