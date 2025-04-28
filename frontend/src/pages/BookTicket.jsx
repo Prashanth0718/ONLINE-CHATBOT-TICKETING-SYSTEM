@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import { CreditCard, Users, Calendar, Building, Loader } from "lucide-react";
 
 const museumPrices = {
-  Louvre: 20,
-  British: 15,
-  Metropolitan: 18,
+  "Louvre": 100,
+  "The British Museum": 150,
+  "Metropolitan Museum": 200,
+  "The National Gallery": 250,
+  "Uffizi Galleries": 300,
+  "State Hermitage": 350,
+  
 };
 
 const BookTicket = () => {
@@ -15,9 +21,31 @@ const BookTicket = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handlePayment = async () => {
-    console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.2
+      }
+    }
+  };
 
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  };
+
+  const handlePayment = async () => {
     if (!museum || !date || visitors < 1) {
       alert("⚠️ Please fill in all details before proceeding.");
       return;
@@ -27,22 +55,30 @@ const BookTicket = () => {
     setLoading(true);
 
     try {
-      // ✅ Get logged-in user details
-      const user = JSON.parse(localStorage.getItem("user")) || {};
-      const token = localStorage.getItem("token");
+      let user = {};
+      const userFromStorage = localStorage.getItem("user");
+      if (userFromStorage) {
+        try {
+          user = JSON.parse(userFromStorage);
+        } catch (err) {
+          console.error("Failed to parse user from localStorage:", err);
+          user = {};
+        }
+      }
 
+      const token = localStorage.getItem("token");
       if (!token) {
         alert("⚠️ You are not logged in. Please log in to book a ticket.");
         setLoading(false);
         return;
       }
 
-      // ✅ Create Razorpay Order
       const { data } = await axios.post(
         "http://localhost:5000/api/payment/create-order",
         { amount: price, currency: "INR" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.amount,
@@ -51,8 +87,6 @@ const BookTicket = () => {
         description: `Booking for ${museum}`,
         order_id: data.orderId,
         handler: async function (response) {
-          console.log("✅ Payment Successful:", response);
-
           await axios.post(
             "http://localhost:5000/api/payment/verify",
             {
@@ -75,86 +109,151 @@ const BookTicket = () => {
           email: user.email || "guest@example.com",
           contact: user.phone || "9999999999",
         },
-        theme: { color: "#2563eb" },
+        theme: { color: "#4F46E5" },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-      console.error("❌ Payment Error:", error.response?.data || error.message);
-      alert("❌ Payment failed. Please try again.");
+      console.error("❌ Payment Error:", error);
+      if (error.response) {
+        alert(error.response.data?.message || "❌ Payment failed. Please try again.");
+      } else if (error.request) {
+        alert("❌ No response from server. Please try again.");
+      } else {
+        alert("❌ Error: " + error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className="relative bg-cover bg-center min-h-screen flex items-center justify-center"
-      style={{
-        backgroundImage:
-          "url('https://i0.wp.com/theluxurytravelexpert.com/wp-content/uploads/2020/11/header2.jpg?fit=1300%2C731&ssl=1')",
-      }}
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-16 px-4"
     >
-      {/* Dark overlay for readability */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div className="max-w-lg mx-auto">
+        <motion.div
+          variants={itemVariants}
+          className="text-center mb-8"
+        >
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Book Your
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+              Museum Visit
+            </span>
+          </h1>
+          <p className="text-gray-600">
+            Select your preferred museum and date to begin your cultural journey.
+          </p>
+        </motion.div>
 
-      {/* Booking Form */}
-      <div className="relative z-10 bg-white shadow-xl rounded-lg p-8 w-96 animate-fadeIn">
-        <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">Book a Ticket</h2>
+        <motion.div
+          variants={itemVariants}
+          className="bg-white rounded-2xl shadow-lg p-8 space-y-6"
+        >
+          <motion.div variants={itemVariants} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Select Museum</label>
+            <div className="relative">
+              <Building className="absolute left-3 top-3 text-gray-400" />
+              <select
+                value={museum}
+                onChange={(e) => setMuseum(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                required
+              >
+                <option value="">Choose a museum</option>
+                {Object.entries(museumPrices).map(([name, price]) => (
+                  <option key={name} value={name}>
+                    {name} - ₹{price}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </motion.div>
 
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-          {/* Museum Selection */}
-          <div className="relative">
-            <select
-              value={museum}
-              onChange={(e) => setMuseum(e.target.value)}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
-              required
-            >
-              <option value="">Select a Museum</option>
-              {Object.keys(museumPrices).map((museumName) => (
-                <option key={museumName} value={museumName}>
-                  {museumName} (₹{museumPrices[museumName]})
-                </option>
-              ))}
-            </select>
-          </div>
+          <motion.div variants={itemVariants} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Select Date</label>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="date"
+                value={date}
+                onFocus={(e) => (e.target.type = "date")}
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                required
+              />
+            </div>
+          </motion.div>
 
-          {/* Date Selection */}
-          <input
-            type="date"
-            value={date}
-            min={new Date().toISOString().split("T")[0]}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
-            required
-          />
+          <motion.div variants={itemVariants} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Number of Visitors</label>
+            <div className="relative">
+              <Users className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="number"
+                value={visitors}
+                min="1"
+                onChange={(e) => setVisitors(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                required
+              />
+            </div>
+          </motion.div>
 
-          {/* Visitors Selection */}
-          <input
-            type="number"
-            value={visitors}
-            min="1"
-            onChange={(e) => setVisitors(e.target.value)}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
-            required
-          />
-
-          {/* Pay & Book Button */}
-          <button
-            type="button"
-            onClick={handlePayment}
-            className={`w-full text-white py-3 rounded-lg text-lg font-semibold shadow-lg transition-all ${
-              loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-            }`}
-            disabled={loading}
+          <motion.div
+            variants={itemVariants}
+            className="pt-4"
           >
-            {loading ? "Processing..." : "Pay & Book Ticket"}
-          </button>
-        </form>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handlePayment}
+              disabled={loading}
+              className={`w-full relative overflow-hidden group py-3 rounded-xl text-white font-semibold transition-all duration-300 ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg hover:shadow-blue-200"
+              }`}
+            >
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white to-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
+              <span className="relative z-10 flex items-center justify-center">
+                {loading ? (
+                  <>
+                    <Loader className="w-5 h-5 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Proceed to Payment
+                  </>
+                )}
+              </span>
+            </motion.button>
+          </motion.div>
+
+          <motion.p
+            variants={itemVariants}
+            className="text-xs text-center text-gray-500 mt-6"
+          >
+            By proceeding with the booking, you agree to our{" "}
+            <a href="#" className="text-blue-600 hover:text-blue-800 transition-colors">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="#" className="text-blue-600 hover:text-blue-800 transition-colors">
+              Privacy Policy
+            </a>
+          </motion.p>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

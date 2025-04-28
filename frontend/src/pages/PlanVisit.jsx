@@ -1,11 +1,79 @@
-// PlanVisit.jsx
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, MapPin, Phone, CreditCard, Info, Calendar, Users, Coffee, Camera } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const PlanVisit = () => {
   const navigate = useNavigate();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  };
+
+  const museums = [
+    {
+      name: "The Louvre",
+      location: "Paris, France",
+      hours: "9:00 AM - 6:00 PM",
+      price: "₹100",
+      image: "https://www.theartlifegallery.com/blog/wp-content/uploads/2023/08/Image-01-1.jpg"
+    },
+    {
+      name: "The British Museum",
+      location: "London, UK",
+      hours: "10:00 AM - 5:00 PM",
+      price: "₹150",
+      image: "https://cdn.londonandpartners.com/asset/british-museum_museum-frontage-image-courtesy-of-the-british-museum_f0b0a5a3c53f8fc1564868c561bd167c.jpg"
+    },
+    {
+      name: "Metropolitan Museum",
+      location: "New York, USA",
+      hours: "10:00 AM - 5:30 PM",
+      price: "₹200",
+      image: "https://assets.simpleviewinc.com/simpleview/image/upload/q_75/v1/crm/newyorkstate/Facade_Met5th_62DB3BB2-193F-48A6-9FA62977A690DB11_306fa88b-c2be-fb5c-f679971ac40debdf.jpg"
+    },
+    {
+      name: "The National Gallery",
+      location: "London, England",
+      hours: "10:30 AM - 6:00 PM",
+      price: "₹250",
+      image: "https://d.newsweek.com/en/full/1528161/7-best-museums-london.jpg?w=1200&f=c4a7fbfa16b0266a94f7dff69b55f4ad?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+    },
+    {
+      name: "Uffizi Galleries",
+      location: "Florence, Italy",
+      hours: "8:15 AM - 6:50 PM",
+      price: "₹300",
+      image: "https://media.cntraveler.com/photos/5c421f204b27de229775c27d/16:9/w_2560,c_limit/GettyImages-511081519.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+    },
+    {
+      name: "State Hermitage",
+      location: "St. Petersburg, Russia",
+      hours: "10:30 AM - 6:00 PM",
+      price: "₹350",
+      image: "https://images.pexels.com/photos/1010657/pexels-photo-1010657.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+    },
+  ];
+
   const visitInfo = [
     {
       icon: Clock,
@@ -20,28 +88,28 @@ const PlanVisit = () => {
       icon: CreditCard,
       title: "Admission Fees",
       details: [
-        "Adults: $20",
-        "Students (with ID): $15",
-        "Children (under 12): Free",
-        "Seniors (65+): $15"
+        "Adults: Varies by museum",
+        "Students (with ID): Discounted rates",
+        "Children (under 12): Often free",
+        "Seniors (65+): Discounted rates"
       ]
     },
     {
       icon: MapPin,
-      title: "Location",
+      title: "Locations",
       details: [
-        "123 Museum Street",
-        "Art City, AC 12345",
-        "Located in Downtown"
+        "Multiple locations worldwide",
+        "See museum details for specific addresses",
+        "Interactive maps available"
       ]
     },
     {
       icon: Phone,
       title: "Contact",
       details: [
-        "Phone: +1 (555) 123-4567",
-        "Email: info@museum.com",
-        "Support: help@museum.com"
+        "Email: info@museumgo.com",
+        "Support: help@museumgo.com",
+        "Phone: +1 (555) 123-4567"
       ]
     }
   ];
@@ -50,158 +118,212 @@ const PlanVisit = () => {
     {
       icon: Camera,
       title: "Photography",
-      text: "Photography without flash is permitted in most areas. Some exhibitions may have restrictions."
+      text: "Photography policies vary by museum. Check individual museum guidelines."
     },
     {
       icon: Coffee,
       title: "Food & Drinks",
-      text: "Food and beverages are not allowed in exhibition areas. Visit our café for refreshments."
+      text: "Most museums have cafés but restrict food in exhibition areas."
     },
     {
       icon: Users,
       title: "Group Visits",
-      text: "Groups of 10 or more should book in advance for special rates and guided tours."
+      text: "Special rates and guided tours available for groups of 10 or more."
     },
     {
       icon: Info,
       title: "Accessibility",
-      text: "The museum is fully accessible. Wheelchairs are available free of charge."
+      text: "All partner museums are wheelchair accessible with various support services."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-16 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Plan Your
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-              Museum Visit
-            </span>
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Make the most of your visit with our comprehensive guide. Book tickets, check opening hours, and discover everything you need to know.
-          </p>
-        </motion.div>
-
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
-        >
-          {[
-            {
-              icon: Calendar,
-              title: "Book Tickets",
-              description: "Reserve your spot and skip the queue",
-              link: "/chatbot",
-              color: "from-blue-600 to-indigo-600"
-            },
-            {
-              icon: Users,
-              title: "Group Bookings",
-              description: "Special rates for groups of 10+",
-              link: "/contact",
-              color: "from-purple-600 to-pink-600"
-            },
-            {
-              icon: Info,
-              title: "Museum Guide",
-              description: "Download our digital guide",
-              link: "/guide",
-              color: "from-green-600 to-teal-600"
-            }
-          ].map((action, index) => {
-            const Icon = action.icon;
-            return (
-              <Link
-                key={index}
-                to={action.link}
-                className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${action.color} flex items-center justify-center mb-4`}>
-                  <Icon className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{action.title}</h3>
-                <p className="text-gray-600">{action.description}</p>
-              </Link>
-            )
-          })}
-        </motion.div>
-
-        {/* Visit Information */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
-        >
-          {visitInfo.map((info, index) => {
-            const Icon = info.icon;
-            return (
-              <motion.div
-                key={index}
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-16 px-4"
+      >
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-center mb-16"
+          >
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl md:text-5xl font-bold text-gray-900 mb-6"
+            >
+              Featured
+              <motion.span
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                transition={{ delay: 0.5 }}
+                className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">{info.title}</h3>
-                <ul className="space-y-2">
-                  {info.details.map((detail, idx) => (
-                    <li key={idx} className="text-gray-600">{detail}</li>
-                  ))}
-                </ul>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                Museums
+              </motion.span>
+            </motion.h1>
+            <motion.p
+              variants={itemVariants}
+              className="text-lg text-gray-600 max-w-2xl mx-auto"
+            >
+              Explore our curated selection of world-renowned museums. Each offers unique experiences and masterpieces of human creativity.
+            </motion.p>
+          </motion.div>
 
-        {/* Guidelines */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="bg-white rounded-2xl p-8 shadow-lg"
-        >
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Visitor Guidelines</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {guidelines.map((guideline, index) => {
-              const Icon = guideline.icon;
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+          >
+            {museums.map((museum, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                whileHover={{ 
+                  scale: 1.02,
+                  transition: { type: "spring", stiffness: 300 }
+                }}
+                className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <motion.img
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
+                    src={museum.image}
+                    alt={museum.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{museum.name}</h3>
+                  <div className="space-y-2 text-gray-600">
+                    <p className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-2 text-blue-600" />
+                      {museum.location}
+                    </p>
+                    <p className="flex items-center">
+                      <Clock className="w-4 h-4 mr-2 text-blue-600" />
+                      {museum.hours}
+                    </p>
+                    <p className="flex items-center">
+                      <CreditCard className="w-4 h-4 mr-2 text-blue-600" />
+                      Price : {museum.price}
+                    </p>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate('/chatbot')}
+                    className="mt-4 w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-200"
+                  >
+                    Book Tickets
+                  </motion.button>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Visit Information */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
+          >
+            {visitInfo.map((info, index) => {
+              const Icon = info.icon;
               return (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-start space-x-4"
+                  variants={itemVariants}
+                  whileHover={{ 
+                    scale: 1.02,
+                    transition: { type: "spring", stiffness: 300 }
+                  }}
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{guideline.title}</h3>
-                    <p className="text-gray-600">{guideline.text}</p>
-                  </div>
+                  <motion.div
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                    className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center mb-4"
+                  >
+                    <Icon className="w-6 h-6 text-white" />
+                  </motion.div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">{info.title}</h3>
+                  <ul className="space-y-2">
+                    {info.details.map((detail, idx) => (
+                      <li key={idx} className="text-gray-600">{detail}</li>
+                    ))}
+                  </ul>
                 </motion.div>
               );
             })}
-          </div>
-        </motion.div>
-      </div>
-    </div>
+          </motion.div>
+
+          {/* Guidelines */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="bg-white rounded-2xl p-8 shadow-lg"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Visitor Guidelines</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {guidelines.map((guideline, index) => {
+                const Icon = guideline.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    whileHover={{ x: 10 }}
+                    className="flex items-start space-x-4"
+                  >
+                    <motion.div
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.6 }}
+                      className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0"
+                    >
+                      <Icon className="w-5 h-5 text-white" />
+                    </motion.div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{guideline.title}</h3>
+                      <p className="text-gray-600">{guideline.text}</p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* CTA Section */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="mt-16 text-center"
+          >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link
+                to="/guide"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-200"
+              >
+                <Info className="w-5 h-5 mr-2" />
+                View Museum Guide
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

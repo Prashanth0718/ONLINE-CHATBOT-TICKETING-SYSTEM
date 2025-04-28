@@ -7,7 +7,10 @@ import {
   LogOut, 
   Settings, 
   Ticket,
-  ChevronDown
+  ChevronDown,
+  Home,
+  Globe,
+  Info,
 } from 'lucide-react';
 
 const ProfileDropdown = () => {
@@ -75,6 +78,22 @@ const ProfileDropdown = () => {
               >
                 <Ticket className="w-4 h-4 mr-3" />
                 <span>My Bookings</span>
+              </Link>
+
+              <Link
+                to="/guide"
+                className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              >
+                <Globe className="w-4 h-4 mr-3" />
+                <span>Guide</span>
+              </Link>
+
+              <Link
+                to="/about"
+                className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              >
+                <Info className="w-4 h-4 mr-3" />
+                <span>About</span>
               </Link>
 
               {role === "admin" && (

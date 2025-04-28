@@ -11,10 +11,8 @@ const Navbar = () => {
 
     { name: "Home", to: "/", icon: Home },
     { name: "Plan Visit", to: "/plan-visit", icon: Map },
-    // { name: "Book Ticket", to: "/book-ticket", icon: Calendar },
+    { name: "Book Ticket", to: "/book-ticket", icon: Calendar },
     { name: "Chatbot", to: "/chatbot", icon: MessageSquare },
-    { name: "My Tickets", to: "/my-tickets", icon: TicketIcon },
-    { name: "About", to: "/about", icon: Info },
   ];
 
   if (role === "admin") {
@@ -75,7 +73,7 @@ const Navbar = () => {
                   to="/signup"
                   className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg hover:shadow-blue-200 transition-all duration-300"
                 >
-                  Get Started
+                  Sign up
                 </Link>
               </div>
             )}

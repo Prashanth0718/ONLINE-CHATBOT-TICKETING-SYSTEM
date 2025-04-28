@@ -42,12 +42,17 @@ const HomePage = () => {
     {
       name: "The National Gallery",
       location: "London, England",
-      img: "https://th-thumbnailer.cdn-si-edu.com/G3qL-HJQy3Uy_Vtv46EP1PlQlZ4=/fit-in/1200x0/filters:focal(2658x1772:2659x1773)/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer_public/78/54/7854cb7b-5123-4961-8fa3-89864f6f9c45/gettyimages-85075611.jpg",
+      img: "https://d.newsweek.com/en/full/1528161/7-best-museums-london.jpg?w=1200&f=c4a7fbfa16b0266a94f7dff69b55f4ad",
     },
     {
       name: "Uffizi Galleries",
       location: "Florence, Italy",
       img: "https://media.cntraveler.com/photos/5c421f204b27de229775c27d/16:9/w_2560,c_limit/GettyImages-511081519.jpg",
+    },
+    {
+      name: "State Hermitage",
+      location: "St. Petersburg, Russia",
+      img: "https://images.pexels.com/photos/1010657/pexels-photo-1010657.jpeg",
     },
   ];
 
@@ -112,6 +117,7 @@ const HomePage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
+              
               return (
                 <motion.div
                   key={index}

@@ -17,6 +17,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import "./App.css";
 import "./index.css";
+import Guide from './pages/Guide';
 
 function App() {
   return (
@@ -33,6 +34,8 @@ function App() {
             <Route path="/chatbot" element={<ChatbotPage />} />
             <Route path="/plan-visit" element={<PlanVisit />} />
             <Route path="/about" element={<About />} />
+            <Route path="/guide" element={<Guide />} />
+            <Route path="/chatbot" element={<ChatbotPage />} />
             
             {/* ✅ Protected Routes */}
             <Route element={<PrivateRoute allowedRoles={["user", "admin"]} />}>
