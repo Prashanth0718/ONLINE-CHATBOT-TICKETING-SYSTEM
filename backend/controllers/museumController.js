@@ -43,3 +43,78 @@ exports.deleteMuseum = async (req, res) => {
     res.status(500).json({ error: "Failed to delete museum" });
   }
 };
+
+// ➡️ Create a new daily stat entry
+exports.createMuseumStat = async (req, res) => {
+  try {
+    const { museumId } = req.params;
+    const { date, availableTickets, bookedTickets } = req.body;
+
+    const museum = await Museum.findById(museumId);
+    if (!museum) {
+      return res.status(404).json({ error: "Museum not found" });
+    }
+
+    museum.dailyStats.push({ date, availableTickets, bookedTickets });
+    await museum.save();
+
+    res.status(201).json({ message: "Daily stat created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to create daily stat" });
+  }
+};
+
+// ➡️ Update an existing daily stat entry
+exports.updateMuseumStat = async (req, res) => {
+  try {
+    const { museumId, statId } = req.params;
+    const { date, availableTickets, bookedTickets } = req.body;
+
+    const museum = await Museum.findById(museumId);
+    if (!museum) {
+      return res.status(404).json({ error: "Museum not found" });
+    }
+
+    const stat = museum.dailyStats.id(statId);
+    if (!stat) {
+      return res.status(404).json({ error: "Stat not found" });
+    }
+
+    stat.date = date;
+    stat.availableTickets = availableTickets;
+    stat.bookedTickets = bookedTickets;
+
+    await museum.save();
+
+    res.json({ message: "Daily stat updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update daily stat" });
+  }
+};
+
+// ➡️ Delete a specific daily stat entry
+exports.deleteMuseumStat = async (req, res) => {
+  try {
+    const { museumId, statId } = req.params;
+
+    const museum = await Museum.findById(museumId);
+    if (!museum) {
+      return res.status(404).json({ error: "Museum not found" });
+    }
+
+    // Filter out the stat to be deleted
+    museum.dailyStats = museum.dailyStats.filter(stat => stat._id.toString() !== statId);
+
+    await museum.save();
+
+    res.json({ message: "Daily stat deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete daily stat" });
+  }
+};
+
+
+
