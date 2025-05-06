@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
 const rateLimit = require("express-rate-limit");
+const crypto = require('crypto');
+const User = require('../models/User');
+const nodemailer = require('nodemailer');
+const sendResetEmail = require('../utils/sendEmail');
 
 // ✅ Login Rate Limiting (Security Against Brute-Force Attacks)
 const loginLimiter = rateLimit({
@@ -59,5 +63,38 @@ router.get("/verify-email/:token", async (req, res) => {
     res.status(500).json({ message: "Email verification failed." });
   }
 });
+
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
+
+    const resetToken = Math.random().toString(36).slice(2);
+    user.resetToken = resetToken;
+    user.resetTokenExpiration = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    // ✅ Use the modular email sender
+    await sendResetEmail(user.email, resetToken);
+
+    res.json({ message: "Reset link sent to email" });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/reset-password", async (req, res) => {
+  try {
+    await authController.resetPassword(req, res);
+  } catch (err) {
+    console.error("❌ Reset Password Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 module.exports = router;

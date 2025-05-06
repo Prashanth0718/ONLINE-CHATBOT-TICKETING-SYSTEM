@@ -3,6 +3,7 @@ const Razorpay = require("razorpay");
 const Payment = require("../models/Payment");
 const Ticket = require("../models/Ticket");
 const Analytics = require("../models/Analytics"); // ✅ Import Analytics model
+const Museum = require("../models/Museum"); // ✅ Import Museum model
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -121,7 +122,42 @@ exports.verifyPayment = async (req, res) => {
       });
       
       
-      savedTicket = await ticket.save(); // ✅ Assign saved ticket to the variable
+      savedTicket = await ticket.save();
+      
+      // ✅ Update dailyStats for the booked museum and date
+      const museum = await Museum.findOne({ name: museumName });
+
+      if (!museum) {
+        console.error("❌ Museum not found for updating dailyStats");
+        return res.status(404).json({ message: "Museum not found" });
+      }
+
+      const statIndex = museum.dailyStats.findIndex(stat => stat.date === date);
+
+      if (statIndex !== -1) {
+        // Update existing date entry
+        if (museum.dailyStats[statIndex].availableTickets < visitors) {
+          return res.status(400).json({ message: "Not enough tickets available" });
+        }
+
+        museum.dailyStats[statIndex].availableTickets -= visitors;
+        museum.dailyStats[statIndex].bookedTickets += visitors;
+      } else {
+        // Create new date entry
+        if (museum.availableTickets < visitors) {
+          return res.status(400).json({ message: "Not enough tickets available" });
+        }
+
+        museum.dailyStats.push({
+          date,
+          availableTickets: museum.availableTickets - visitors,
+          bookedTickets: visitors
+        });
+      }
+
+      await museum.save();
+      console.log("📊 dailyStats updated for museum:", museumName, "on date:", date);
+// ✅ Assign saved ticket to the variable
       console.log("✅ Ticket Created & Saved in DB:", savedTicket);
     } catch (error) {
       console.error("❌ Error Saving Ticket:", error);

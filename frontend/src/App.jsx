@@ -15,6 +15,8 @@ import PaymentPage from "./pages/PaymentPage";
 import BookTicket from "./pages/BookTicket";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from './pages/ResetPassword';
 import "./App.css";
 import "./index.css";
 import Guide from './pages/Guide';
@@ -36,6 +38,8 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/chatbot" element={<ChatbotPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             
             {/* ✅ Protected Routes */}
             <Route element={<PrivateRoute allowedRoles={["user", "admin"]} />}>

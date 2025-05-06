@@ -43,7 +43,22 @@ const DashboardOverview = () => {
     }
   };
 
-  const chartData = analytics
+  // const chartData = analytics
+  //   ? {
+  //       labels: Object.keys(analytics.museumBookings),
+  //       datasets: [
+  //         {
+  //           label: "Museum Bookings",
+  //           data: Object.values(analytics.museumBookings),
+  //           backgroundColor: "rgba(54, 162, 235, 0.6)",
+  //           borderColor: "rgba(54, 162, 235, 1)",
+  //           borderWidth: 1,
+  //         },
+  //       ],
+  //     }
+  //   : null;
+
+    const chartData = analytics && analytics.museumBookings
     ? {
         labels: Object.keys(analytics.museumBookings),
         datasets: [
@@ -56,7 +71,7 @@ const DashboardOverview = () => {
           },
         ],
       }
-    : null;
+    : { labels: [], datasets: [] }; 
 
   return (
     <motion.div

@@ -9,7 +9,9 @@ const UserSchema = new mongoose.Schema({
   dob: { type: Date, required: false },
   city: { type: String, required: false },
   country: { type: String, required: false },
-  role: { type: String, enum: ["user", "admin"], default: "user" }, // Ensure role is included
+  role: { type: String, enum: ["user", "admin"], default: "user" },
+  resetToken: String,
+  resetTokenExpiration: Date, // Ensure role is included
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", UserSchema);
