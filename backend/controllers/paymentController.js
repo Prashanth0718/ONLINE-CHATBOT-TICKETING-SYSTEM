@@ -4,6 +4,9 @@ const Payment = require("../models/Payment");
 const Ticket = require("../models/Ticket");
 const Analytics = require("../models/Analytics"); // ✅ Import Analytics model
 const Museum = require("../models/Museum"); // ✅ Import Museum model
+const User = require("../models/User"); // Adjust the path as needed
+const generateTicketPdf = require('../utils/generateTicketPdf');
+const sendEmailWithAttachment = require('../utils/sendEmailWithAttachment');
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -159,6 +162,19 @@ exports.verifyPayment = async (req, res) => {
       console.log("📊 dailyStats updated for museum:", museumName, "on date:", date);
 // ✅ Assign saved ticket to the variable
       console.log("✅ Ticket Created & Saved in DB:", savedTicket);
+
+      const user = await User.findById(userId);
+      if (user && user.email) {
+        const pdfPath = await generateTicketPdf(savedTicket);
+        await sendEmailWithAttachment(
+          user.email,
+          "🎟️ Your Museum Ticket",
+          `<p>Thank you for booking your museum ticket to <strong>${savedTicket.museumName}</strong> on <strong>${savedTicket.date}</strong>.</p>
+          <p>Find your ticket attached below as a PDF.</p>`,
+          pdfPath
+        );
+        console.log("✅ Ticket PDF sent to:", user.email);
+      }
     } catch (error) {
       console.error("❌ Error Saving Ticket:", error);
       return res.status(500).json({ message: "Failed to save ticket" });

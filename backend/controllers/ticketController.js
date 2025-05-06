@@ -5,6 +5,8 @@ const Ticket = require('../models/Ticket');
 const axios = require('axios');
 const updateAnalyticsOnCancellation = require("../utils/updateAnalyticsOnCancellation");
 const Museum = require("../models/Museum");
+const User = require("../models/User");
+const sendCancellationEmail = require("../utils/sendCancellationEmail");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -123,8 +125,8 @@ const cancelTicket = async (req, res) => {
       return res.status(400).json({ message: "❌ Invalid payment ID. Refund not possible." });
     }
 
+    // 🛑 Proceed with Razorpay Refund if not refunded yet
     try {
-      // 🛑 Only proceed if not refunded before
       const refundResponse = await axios.post(
         `https://api.razorpay.com/v1/payments/${ticket.paymentId}/refund`,
         {},
@@ -136,7 +138,7 @@ const cancelTicket = async (req, res) => {
         }
       );
 
-      // ✅ Update ticket status
+      // ✅ Update ticket status and refund details
       ticket.status = "cancelled";
       ticket.refundStatus = "processed";
       ticket.updatedAt = new Date();
@@ -144,6 +146,14 @@ const cancelTicket = async (req, res) => {
       await ticket.save();
       await updateAnalyticsOnCancellation(ticket);
 
+      // 📧 Send email to user about the cancellation
+      const user = await User.findById(ticket.userId);
+      if (user && user.email) {
+        await sendCancellationEmail(user.email, ticket);
+        console.log("📧 Cancellation email sent to:", user.email);
+      }
+
+      // ✅ Send response back
       return res.status(200).json({
         message: "✅ Ticket cancelled and refund initiated.",
         refundDetails: refundResponse.data,
@@ -153,7 +163,7 @@ const cancelTicket = async (req, res) => {
     } catch (razorpayError) {
       const rzpMsg = razorpayError.response?.data?.error?.description;
 
-      // ⚠️ If already refunded, mark it in DB
+      // ⚠️ If refund has already been processed
       if (rzpMsg === "The payment has been fully refunded already") {
         ticket.status = "cancelled";
         ticket.refundStatus = "processed"; // Mark as done
@@ -177,6 +187,7 @@ const cancelTicket = async (req, res) => {
     }
   }
 };
+
 
 
 // ✅ Fetch user-specific tickets

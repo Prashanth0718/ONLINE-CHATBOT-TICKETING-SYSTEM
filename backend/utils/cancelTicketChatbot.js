@@ -2,6 +2,8 @@ const axios = require("axios");
 const Ticket = require("../models/Ticket");
 const Museum = require("../models/Museum");
 const updateAnalyticsOnCancellation = require("./updateAnalyticsOnCancellation");
+const User = require("../models/User"); // Assuming you have a User model
+const sendCancellationEmail = require("../utils/sendCancellationEmail");
 
 const cancelTicketChatbot = async (ticketId) => {
   try {
@@ -60,6 +62,17 @@ const cancelTicketChatbot = async (ticketId) => {
     ticket.updatedAt = new Date();
     await ticket.save();
     await updateAnalyticsOnCancellation(ticket);
+    // ✅ Send Cancellation Email
+if (ticket.userId) {
+  const user = await User.findById(ticket.userId);
+  if (user && user.email) {
+    await sendCancellationEmail(user.email, ticket);
+    console.log("📧 Cancellation email sent to:", user.email);
+  } else {
+    console.warn("⚠️ User email not found for ticket:", ticket._id);
+  }
+}
+
 
     // ✅ Update Museum stats
     const museum = await Museum.findOne({ name: ticket.museumName });

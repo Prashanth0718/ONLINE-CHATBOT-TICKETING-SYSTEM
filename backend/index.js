@@ -16,18 +16,6 @@ const museumRoutes = require("./routes/museumRoutes");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const sendEmail = require("./utils/emailService");
-
-
-// sendEmail(
-//   "prashanththeromeo@gmail.com",
-//   "Test Email with PDF",
-//   "<p>This is a test email with an attachment.</p>",
-//   "./tickets/test_ticket.pdf"
-// )
-//   .then(() => console.log("✅ Test email sent successfully"))
-//   .catch((err) => console.error("❌ Email sending failed:", err));
-
 
 // Middleware
 const corsOptions = {
@@ -55,7 +43,6 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use('/api/tickets', require('./routes/ticketRoutes'));
-
 app.use("/api/payment", paymentRoutes);
 //app.use("/api/payments", paymentRoutes);
 app.use("/api/payments", require("./routes/paymentRoutes"));
