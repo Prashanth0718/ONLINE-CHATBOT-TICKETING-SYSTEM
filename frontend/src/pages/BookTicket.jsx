@@ -25,8 +25,27 @@ const BookTicket = () => {
       }
     };
 
+
+
     fetchMuseums();
   }, []);
+  useEffect(() => {
+  if (!museum || !date) return;
+
+  const selectedMuseum = museumList.find(m => m.name === museum);
+  if (!selectedMuseum) return;
+
+  // Check for that date in dailyStats
+  const statForDate = selectedMuseum.dailyStats?.find(stat => stat.date === date);
+
+  if (statForDate) {
+    setAvailableTickets(statForDate.availableTickets);
+  } else {
+    // Fallback to global availableTickets
+    setAvailableTickets(selectedMuseum.availableTickets);
+  }
+}, [museum, date, museumList]);
+
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -57,7 +76,7 @@ const BookTicket = () => {
     setMuseum(selectedMuseum.name);
     setLocation(selectedMuseum.location);
     setTicketPrice(selectedMuseum.ticketPrice);
-    setAvailableTickets(selectedMuseum.availableTickets);
+
   };
 
   const handlePayment = async () => {
