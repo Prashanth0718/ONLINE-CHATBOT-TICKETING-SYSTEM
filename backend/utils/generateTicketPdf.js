@@ -23,7 +23,7 @@ const generateTicketPdf = async (ticketData) => {
     doc.moveDown();
 
     // ✅ Generate QR Code with secure verification URL
-    const verificationUrl = `http://localhost:5000/api/tickets/verify/${ticketData._id}`; // Update this line
+    const verificationUrl = `https://museumgo-backend.onrender.com/api/tickets/verify/${ticketData._id}`; // Update this line
     const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
     // Convert base64 Data URL to buffer

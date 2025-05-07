@@ -61,7 +61,7 @@ if (
       session.step = "main_menu";
     } else {
       try {
-        const ticketResponse = await axios.get("http://localhost:5000/api/tickets/my-tickets", {
+        const ticketResponse = await axios.get("https://museumgo-backend.onrender.com/api/tickets/my-tickets", {
           headers: { Authorization: token },
         });
         const tickets = ticketResponse.data;
@@ -100,7 +100,7 @@ if (
       response.message = "⚠️ You need to log in to cancel a ticket.";
     } else {
       try {
-        const ticketResponse = await axios.get("http://localhost:5000/api/tickets/my-tickets", {
+        const ticketResponse = await axios.get("https://museumgo-backend.onrender.com/api/tickets/my-tickets", {
           headers: { Authorization: token },
         });
         const tickets = ticketResponse.data;
