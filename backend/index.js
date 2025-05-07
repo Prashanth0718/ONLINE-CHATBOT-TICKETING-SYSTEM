@@ -64,20 +64,6 @@ app._router.stack.forEach((r) => {
   }
 });
 
-const cron = require("node-cron");
-const { resetDailyAnalytics, resetMonthlyAnalytics } = require("./controllers/analyticsController");
-
-// 🕛 Schedule daily analytics reset at **midnight (12:00 AM)**
-cron.schedule("0 0 * * *", () => {
-  console.log("⏰ Running Daily Analytics Reset...");
-  resetDailyAnalytics();
-});
-
-// 📅 Schedule monthly analytics reset on the **1st of each month at 12:05 AM**
-cron.schedule("5 0 1 * *", () => {
-  console.log("⏰ Running Monthly Analytics Reset...");
-  resetMonthlyAnalytics();
-});
 
 
 // Start Server
