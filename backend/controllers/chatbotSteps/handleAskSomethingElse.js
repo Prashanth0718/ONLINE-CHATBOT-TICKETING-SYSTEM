@@ -69,6 +69,7 @@ const handleAskSomethingElse = async ({ userMessage, session, response }) => {
   } catch (error) {
     console.error("❌ Error in custom question flow:", error.message || error);
     response.message = "⚠️ Sorry, I couldn't get an answer for that. Please try again.";
+    response.options = ["❓ Ask another question", "🏠 Go back to Main Menu"];
     session.step = "post_info_suggestions";
     session.awaitingCustomQuestion = false;
   }

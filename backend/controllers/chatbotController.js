@@ -91,6 +91,8 @@ exports.chatbotHandler = async (req, res) => {
         } else {
           console.log("❓ Unrecognized input at post_info_suggestions");
           response.message = "❓ I didn't understand that. Please choose an option again.";
+          response.options = ["Ask another question", "Go back to Main Menu"];
+          session.step = "post_info_suggestions";
           return res.json({ response, session });
         }
       }

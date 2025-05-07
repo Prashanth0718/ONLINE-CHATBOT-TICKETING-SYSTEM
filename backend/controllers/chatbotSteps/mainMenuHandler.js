@@ -98,6 +98,14 @@ if (
     const token = req.headers.authorization;
     if (!token) {
       response.message = "⚠️ You need to log in to cancel a ticket.";
+      response.options = [
+        "Book a ticket 🎟️",
+        "Check my tickets 📜",
+        "Cancel my ticket ❌",
+        "Ask something else ❓",
+        "Restart Chat 🔄"
+      ];
+      session.step = "main_menu";
     } else {
       try {
         const ticketResponse = await axios.get("https://museumgo-backend.onrender.com/api/tickets/my-tickets", {
@@ -125,6 +133,14 @@ if (
       } catch (error) {
         console.error("❌ Error fetching tickets:", error.message);
         response.message = "⚠️ Could not fetch your tickets.";
+        response.options = [
+          "Book a ticket 🎟️",
+          "Check my tickets 📜",
+          "Cancel my ticket ❌",
+          "Ask something else ❓",
+          "Restart Chat 🔄"
+        ];
+        session.step = "main_menu";
       }
     }
   }
