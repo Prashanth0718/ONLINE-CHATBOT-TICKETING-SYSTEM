@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 
 const sendResetEmail = async (email, resetToken) => {
   const transporter = nodemailer.createTransport({
-    service: 'Gmail', // or your provider
+    service: 'Gmail',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
@@ -10,13 +10,18 @@ const sendResetEmail = async (email, resetToken) => {
   });
 
   const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
-// const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+
   await transporter.sendMail({
+    from: '"MuseumGo" <prashanthsn6363@gmail.com>',
     to: email,
-    subject: "Password Reset",
+    subject: "Reset Your Password",
     html: `
-      <p>You requested a password reset</p>
-      <p><a href="${resetLink}">Click here to reset your password</a></p>
+      <p>Hello,</p>
+      <p>You recently requested to reset your password. Click the link below to proceed:</p>
+      <p><a href="${resetLink}">Reset Password</a></p>
+      <p>This link will expire in 15 minutes. If you did not request this, you can safely ignore this email.</p>
+      <br/>
+      <p>Regards,<br/>MuseumGo Support Team</p>
     `,
   });
 };

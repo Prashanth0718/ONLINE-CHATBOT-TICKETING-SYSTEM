@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ChatbotPage from "./pages/ChatbotPage"; // Import the Chatbot page
+import ChatbotPage from "./pages/ChatbotPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
@@ -8,7 +8,6 @@ import MyTickets from "./pages/MyTickets";
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/PrivateRoute";
 import PlanVisit from './pages/PlanVisit';
-//import Chatbot from "./components/Chatbot";
 import About from './pages/About';
 import ProfilePage from "./pages/ProfilePage";
 import PaymentPage from "./pages/PaymentPage";
@@ -17,9 +16,11 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from './pages/ResetPassword';
+import VerifyTicket from "./pages/VerifyTicket";
 import "./App.css";
 import "./index.css";
 import Guide from './pages/Guide';
+
 
 function App() {
   return (
@@ -40,7 +41,8 @@ function App() {
             <Route path="/chatbot" element={<ChatbotPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-            
+            <Route path="/verify/:ticketId" element={<VerifyTicket />} />
+
             {/* ✅ Protected Routes */}
             <Route element={<PrivateRoute allowedRoles={["user", "admin"]} />}>
               <Route path="/my-tickets" element={<MyTickets />} />

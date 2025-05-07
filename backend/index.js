@@ -12,6 +12,7 @@ const chatbotRoutes = require("./routes/chatbotRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const museumRoutes = require("./routes/museumRoutes");
+const verifyRoutes = require("./routes/verifyRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,6 +52,7 @@ app.use("/api/analytics", require("./routes/analyticsRoutes"));
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/museums", museumRoutes);
+app.use("/api/verify", verifyRoutes);
 // Default Route
 app.get("/", (req, res) => {
   res.send("Welcome to the Chatbot Ticketing System API");

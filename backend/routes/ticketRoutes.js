@@ -1,6 +1,7 @@
 const express = require("express");
 const Ticket = require("../models/Ticket");
 
+
 const { 
     createTicket, 
     getUserTickets, 
@@ -27,6 +28,44 @@ router.get("/my-tickets", authMiddleware, getUserTickets);
 router.delete("/cancel/:id", authMiddleware, cancelTicket);
 
 router.put("/:id", authMiddleware, adminOnly, updateTicket);
+
+router.get("/verify/:ticketId", async (req, res) => {
+    try {
+      const ticket = await Ticket.findById(req.params.ticketId);
+  
+      if (!ticket) {
+        return res.send(`
+          <h2 style="color:red; text-align:center;">❌ Ticket not found or invalid.</h2>
+        `);
+      }
+  
+      const formattedDate = new Date(ticket.date).toLocaleDateString();
+  
+      res.send(`
+        <div style="max-width:500px;margin:40px auto;padding:20px;border-radius:10px;
+                    box-shadow:0 4px 12px rgba(0,0,0,0.1);font-family:sans-serif;">
+          <h2 style="color:green;text-align:center;">🎫 Ticket Verified</h2>
+          <hr/>
+          <p><strong>Museum:</strong> ${ticket.museumName}</p>
+          <p><strong>Date:</strong> ${formattedDate}</p>
+          <p><strong>Visitors:</strong> ${ticket.visitors}</p>
+          <p><strong>Status:</strong> 
+            <span style="color:${ticket.status === "cancelled" ? "red" : "green"};">
+              ${ticket.status}
+            </span>
+          </p>
+          <p><strong>Payment ID:</strong> ${ticket.paymentId}</p>
+          <p><strong>User ID:</strong> ${ticket.userId}</p>
+        </div>
+      `);
+    } catch (err) {
+      res.send(`
+        <h2 style="color:red;text-align:center;">❌ Error verifying ticket</h2>
+        <p style="text-align:center;">${err.message}</p>
+      `);
+    }
+  });
+  
 
 // router.put("/:id", authMiddleware, adminOnly, async (req, res) => {
 //     try {

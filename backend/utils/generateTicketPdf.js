@@ -22,15 +22,9 @@ const generateTicketPdf = async (ticketData) => {
     doc.text(`Booked By (User ID): ${ticketData.userId}`);
     doc.moveDown();
 
-    // ✅ Generate QR Code with relevant ticket info
-    const qrText = JSON.stringify({
-      museum: ticketData.museumName,
-      date: ticketData.date,
-      paymentId: ticketData.paymentId,
-      visitors: ticketData.visitors,
-    });
-
-    const qrDataUrl = await QRCode.toDataURL(qrText);
+    // ✅ Generate QR Code with secure verification URL
+    const verificationUrl = `http://localhost:5000/api/tickets/verify/${ticketData._id}`; // Update this line
+    const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
     // Convert base64 Data URL to buffer
     const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, '');
