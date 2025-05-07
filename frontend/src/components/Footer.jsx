@@ -3,28 +3,28 @@ import { Facebook, Twitter, Github, Instagram, Mail, Phone, MapPin } from 'lucid
 
 const navigation = {
   main: [
-    { name: "About Us", href: "/" },
-    { name: "Exhibitions", href: "/" },
-    { name: "Events", href: "/" },
-    { name: "Contact", href: "/" },
+    { name: "About Us", href: "/about" },
+    { name: "Plan & Visit", href: "/plan-visit" },
+    { name: "Guide", href: "/guide" },
+    { name: "Contact", href: "/contact" },
     { name: "Blog", href: "/" },
   ],
   support: [
-    { name: "Help Center", href: "/" },
-    { name: "Terms of Service", href: "/" },
-    { name: "Privacy Policy", href: "/" },
-    { name: "Cookie Policy", href: "/" },
+    { name: "Terms and Conditions", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/terms" },
+    { name: "Privacy Policy", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/privacy" },
+    { name: "Cancellation and Refund Policy", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/refund" },
+    { name: "Shipping and Delivery Policy", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/shipping" },
   ],
   social: [
-    { name: "Facebook", href: "#", icon: Facebook },
-    { name: "Twitter", href: "#", icon: Twitter },
-    { name: "GitHub", href: "#", icon: Github },
-    { name: "Instagram", href: "#", icon: Instagram },
+    { name: "Facebook", href: "https://www.facebook.com/prashanth.sn.2003", icon: Facebook },
+    { name: "Twitter", href: "https://x.com/prashanth_arya_", icon: Twitter },
+    { name: "GitHub", href: "https://github.com/Prashanth0718", icon: Github },
+    { name: "Instagram", href: "https://www.instagram.com/__.prashanth_kshatriyas18.__/", icon: Instagram },
   ],
   contact: [
-    { icon: Mail, text: "support@museumgo.com" },
-    { icon: Phone, text: "+1 (555) 123-4567" },
-    { icon: MapPin, text: "123 Museum Street, Art City, AC 12345" },
+    { icon: Mail, text: "prashanthsn6363@gmail.com" },
+    { icon: Phone, text: "+91 6363690394" },
+    { icon: MapPin, text: "Somambudi Agrahara Village, Matnahalli Post,Kolar Taluk & District -563101" },
   ],
 };
 
