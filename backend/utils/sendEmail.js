@@ -9,7 +9,7 @@ const sendResetEmail = async (email, resetToken) => {
     },
   });
 
-  const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+  const resetLink = `https://prashanthsn-museumgo.netlify.app/reset-password/${resetToken}`;
 
   await transporter.sendMail({
     from: '"MuseumGo" <prashanthsn6363@gmail.com>',
