@@ -47,7 +47,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/admin/users", {
+      const response = await axios.get("https://museumgo-backend.onrender.com/api/admin/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(response.data);
@@ -61,7 +61,7 @@ const UserManagement = () => {
   const fetchUserBookings = async (userId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/api/admin/users/${userId}/bookings`, {
+      const response = await axios.get(`https://museumgo-backend.onrender.com/api/admin/users/${userId}/bookings`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSelectedUserBookings(response.data);
@@ -80,7 +80,7 @@ const UserManagement = () => {
       }
 
       await axios.put(
-        "http://localhost:5000/api/admin/users/update",
+        "https://museumgo-backend.onrender.com/api/admin/users/update",
         editingUser,
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -98,7 +98,7 @@ const UserManagement = () => {
   const resetPassword = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post(`http://localhost:5000/api/admin/users/reset-password/${id}`, {}, {
+      await axios.post(`https://museumgo-backend.onrender.com/api/admin/users/reset-password/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert(`Password reset successful for User ID: ${id}`);
@@ -119,7 +119,7 @@ const UserManagement = () => {
   const handleSaveEdit = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.put(`http://localhost:5000/api/admin/bookings/${editingBooking._id}`, editedData, {
+      await axios.put(`https://museumgo-backend.onrender.com/api/admin/bookings/${editingBooking._id}`, editedData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Booking updated successfully!");
@@ -135,7 +135,7 @@ const UserManagement = () => {
     if (!window.confirm("Are you sure you want to delete this booking?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/bookings/${bookingId}`, {
+      await axios.delete(`https://museumgo-backend.onrender.com/api/admin/bookings/${bookingId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Booking deleted successfully!");
@@ -150,7 +150,7 @@ const UserManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+      await axios.delete(`https://museumgo-backend.onrender.com/api/admin/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("User deleted successfully");

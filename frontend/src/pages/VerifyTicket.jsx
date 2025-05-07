@@ -13,7 +13,7 @@ const VerifyTicket = () => {
   useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/tickets/${ticketId}`);
+        const res = await axios.get(`https://museumgo-backend.onrender.com/api/tickets/${ticketId}`);
         setTicket(res.data.ticket);
       } catch (err) {
         setError("Invalid ticket or verification failed");

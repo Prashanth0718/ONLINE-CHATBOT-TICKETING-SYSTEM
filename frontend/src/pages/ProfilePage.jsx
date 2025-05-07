@@ -31,7 +31,7 @@ const ProfilePage = () => {
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/users/profile", {
+        const res = await axios.get("https://museumgo-backend.onrender.com/api/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
@@ -96,7 +96,7 @@ const ProfilePage = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.put("http://localhost:5000/api/users/profile", formData, {
+      await axios.put("https://museumgo-backend.onrender.com/api/users/profile", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(formData);
@@ -116,7 +116,7 @@ const ProfilePage = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.put("http://localhost:5000/api/users/change-password", passwordData, {
+      await axios.put("https://museumgo-backend.onrender.com/api/users/change-password", passwordData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });

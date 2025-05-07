@@ -38,7 +38,7 @@ const ManagePayments = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/payments", {
+      const response = await axios.get("https://museumgo-backend.onrender.com/api/payments", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,7 +56,7 @@ const ManagePayments = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/payments/${id}`,
+        `https://museumgo-backend.onrender.com/api/payments/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -82,7 +82,7 @@ const ManagePayments = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/payments/${id}`, {
+      await axios.delete(`https://museumgo-backend.onrender.com/api/payments/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

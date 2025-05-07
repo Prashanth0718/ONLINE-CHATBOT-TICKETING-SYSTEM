@@ -48,7 +48,7 @@ const Chatbot = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/chatbot",
+        "https://museumgo-backend.onrender.com/api/chatbot",
         { userMessage: message, session, language },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -93,7 +93,7 @@ const Chatbot = () => {
       handler: async function (response) {
         try {
           const verifyResponse = await axios.post(
-            "http://localhost:5000/api/payment/verify",
+            "https://museumgo-backend.onrender.com/api/payment/verify",
             {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -147,7 +147,7 @@ const Chatbot = () => {
 
   const refreshToken = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/refresh-token", {}, { withCredentials: true });
+      const response = await axios.post("https://museumgo-backend.onrender.com/api/auth/refresh-token", {}, { withCredentials: true });
       localStorage.setItem("token", response.data.token);
       return response.data.token;
     } catch {

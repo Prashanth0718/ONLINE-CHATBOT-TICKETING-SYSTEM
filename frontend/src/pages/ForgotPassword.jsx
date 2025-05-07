@@ -19,7 +19,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/forgot-password", { email });
+      await axios.post("https://museumgo-backend.onrender.com/api/auth/forgot-password", { email });
       showToast("Password reset instructions sent to your email!");
       setEmail("");
     } catch (error) {

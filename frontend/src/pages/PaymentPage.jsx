@@ -8,7 +8,7 @@ const PaymentPage = () => {
   const handlePayment = async () => {
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/payment/create-order",  // ✅ Fixed route name
+        "https://museumgo-backend.onrender.com/api/payment/create-order",  // ✅ Fixed route name
         { amount },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -25,7 +25,7 @@ const PaymentPage = () => {
           console.log("✅ Payment Successful:", response);
   
           await axios.post(
-            "http://localhost:5000/api/payment/verify",
+            "https://museumgo-backend.onrender.com/api/payment/verify",
             { ...response },
             { headers: { Authorization: `Bearer ${token}` } }
           );

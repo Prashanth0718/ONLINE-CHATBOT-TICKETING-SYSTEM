@@ -28,7 +28,7 @@ const SignIn = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post("https://museumgo-backend.onrender.com/api/auth/login", {
         email,
         password,
       });
@@ -52,7 +52,7 @@ const SignIn = () => {
     e.preventDefault();
     setResetLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/forgot-password", {
+      await axios.post("https://museumgo-backend.onrender.com/api/auth/forgot-password", {
         email: resetEmail
       });
       showToast("Password reset instructions sent to your email!");

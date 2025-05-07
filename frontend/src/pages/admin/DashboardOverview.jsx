@@ -19,7 +19,7 @@ const DashboardOverview = () => {
   const fetchAnalytics = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/analytics/admin-dashboard", {
+      const response = await axios.get("https://museumgo-backend.onrender.com/api/analytics/admin-dashboard", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

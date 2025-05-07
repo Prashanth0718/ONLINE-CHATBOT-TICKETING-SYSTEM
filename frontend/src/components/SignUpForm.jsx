@@ -35,7 +35,7 @@ const SignUpForm = ({ navigate }) => {
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post("https://museumgo-backend.onrender.com/api/auth/register", {
         name,
         email,
         phone,

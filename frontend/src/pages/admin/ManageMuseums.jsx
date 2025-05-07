@@ -69,7 +69,7 @@ const ManageMuseums = () => {
   const fetchMuseums = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/museums", {
+      const response = await axios.get("https://museumgo-backend.onrender.com/api/museums", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMuseums(response.data);
@@ -94,11 +94,11 @@ const ManageMuseums = () => {
 
     try {
       if (editingMuseum) {
-        await axios.put(`http://localhost:5000/api/museums/${editingMuseum._id}`, formData, {
+        await axios.put(`https://museumgo-backend.onrender.com/api/museums/${editingMuseum._id}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post("http://localhost:5000/api/museums", formData, {
+        await axios.post("https://museumgo-backend.onrender.com/api/museums", formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -117,13 +117,13 @@ const ManageMuseums = () => {
     try {
       if (editingStatId) {
         await axios.put(
-          `http://localhost:5000/api/museums/${selectedMuseum._id}/stats/${editingStatId}`,
+          `https://museumgo-backend.onrender.com/api/museums/${selectedMuseum._id}/stats/${editingStatId}`,
           statsFormData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          `http://localhost:5000/api/museums/${selectedMuseum._id}/stats`,
+          `https://museumgo-backend.onrender.com/api/museums/${selectedMuseum._id}/stats`,
           statsFormData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -141,7 +141,7 @@ const ManageMuseums = () => {
     if (!window.confirm("Are you sure you want to delete this museum?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/museums/${id}`, {
+      await axios.delete(`https://museumgo-backend.onrender.com/api/museums/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchMuseums();
@@ -154,7 +154,7 @@ const ManageMuseums = () => {
     if (!window.confirm("Are you sure you want to delete this statistic?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/museums/${museumId}/stats/${statId}`, {
+      await axios.delete(`https://museumgo-backend.onrender.com/api/museums/${museumId}/stats/${statId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchMuseums();

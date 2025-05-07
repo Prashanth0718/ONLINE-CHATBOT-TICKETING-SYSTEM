@@ -20,7 +20,7 @@ const MyTickets = () => {
       }
 
       try {
-        const res = await axios.get("http://localhost:5000/api/tickets/my-tickets", {
+        const res = await axios.get("https://museumgo-backend.onrender.com/api/tickets/my-tickets", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTickets(res.data);
@@ -67,7 +67,7 @@ const MyTickets = () => {
 
     try {
       await axios.delete(
-        `http://localhost:5000/api/tickets/cancel/${ticketId}`,
+        `https://museumgo-backend.onrender.com/api/tickets/cancel/${ticketId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
