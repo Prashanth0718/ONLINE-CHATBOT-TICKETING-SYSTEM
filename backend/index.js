@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "https://museumgo-backend.onrender.com", "https://prashanthsn-museumgo.netlify.app", "https://museumgo.in/"], // ✅ Added 5174
+  origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "https://museumgo-backend.onrender.com", "https://prashanthsn-museumgo.netlify.app"], // ✅ Added 5174
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // Allow cookies/auth headers
