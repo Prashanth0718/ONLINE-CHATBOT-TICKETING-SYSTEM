@@ -158,7 +158,7 @@ const MyTickets = () => {
 
                   <div className="space-y-2 mb-6">
                     <p className="text-gray-600">Date: {formatDate(ticket.date)}</p>
-                    <p className="text-gray-600">Price: ${ticket.price}</p>
+                    <p className="text-gray-600">Price: ₹{ticket.price}</p>
                   </div>
 
                   <div className="flex justify-between gap-4">
