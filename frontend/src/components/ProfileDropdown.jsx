@@ -8,7 +8,7 @@ import {
   Settings, 
   Ticket,
   ChevronDown,
-  Home,
+  Mail,
   Globe,
   Info,
 } from 'lucide-react';
@@ -94,6 +94,14 @@ const ProfileDropdown = () => {
               >
                 <Info className="w-4 h-4 mr-3" />
                 <span>About</span>
+              </Link>
+
+              <Link
+                to="/contact"
+                className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              >
+                <Mail className="w-4 h-4 mr-3" />
+                <span>Contact Us</span>
               </Link>
 
               {role === "admin" && (

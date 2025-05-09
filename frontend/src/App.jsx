@@ -20,6 +20,7 @@ import VerifyTicket from "./pages/VerifyTicket";
 import "./App.css";
 import "./index.css";
 import Guide from './pages/Guide';
+import Contact from './pages/Contact';
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/verify/:ticketId" element={<VerifyTicket />} />
+            <Route path="/contact" element={<Contact />} />
 
             {/* ✅ Protected Routes */}
             <Route element={<PrivateRoute allowedRoles={["user", "admin"]} />}>
