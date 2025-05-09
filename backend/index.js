@@ -21,9 +21,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 const corsOptions = {
   origin: [
-    "http://localhost:3000",
     "http://localhost:5173",
-    "http://localhost:5174",
     "https://museumgo.in",
     "https://www.museumgo.in",
     "https://prashanthsn-museumgo.netlify.app",
