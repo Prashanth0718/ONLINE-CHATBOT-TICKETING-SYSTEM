@@ -165,12 +165,9 @@ const Guide = () => {
           <h2 className="text-2xl font-bold mb-4">Need Help?</h2>
           <p className="mb-6">Our support team is available 24/7 to assist you with any questions.</p>
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <a href="mailto:prashanthsn6363@gmail.com" className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors duration-300">
-              Email Support
-            </a>
-            <a href="tel:+916363690394" className="text-white border-2 border-white px-6 py-3 rounded-xl font-semibold hover:bg-white/10 transition-colors duration-300">
-              Call Us
-            </a>
+          <a href="/contact" className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors duration-300">
+            Contact Us
+          </a>
           </div>
         </motion.div>
       </div>

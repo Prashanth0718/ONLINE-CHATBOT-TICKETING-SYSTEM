@@ -16,6 +16,7 @@
     "chart.js": "^4.4.8",
     "daisyui": "^5.0.28",
     "date-fns": "^4.1.0",
+    "emailjs-com": "^3.2.0",
     "emoji-dictionary": "^1.0.12",
     "framer-motion": "^12.7.4",
     "i18next": "^24.2.3",

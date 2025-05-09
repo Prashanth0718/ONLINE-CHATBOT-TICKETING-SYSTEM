@@ -18,19 +18,19 @@ const About = () => {
     {
       name: "Mr. Prashanth S N",
       role: "Museum Director",
-      image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300",
+      image: "https://images.pexels.com/photos/25884444/pexels-photo-25884444/free-photo-of-young-man-in-suit-sitting-at-table.jpeg?auto=compress&cs=tinysrgb&w=600?auto=compress&cs=tinysrgb&w=300",
       bio: "With over 20 years of experience in museum curation and management."
     },
     {
-      name: "Michael Chen",
+      name: "Nithin H M",
       role: "Head Curator",
       image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300",
       bio: "Specializing in modern art and digital exhibitions."
     },
     {
-      name: "Emily Rodriguez",
+      name: "Kanala Krishna",
       role: "Education Director",
-      image: "https://images.pexels.com/photos/1181695/pexels-photo-1181695.jpeg?auto=compress&cs=tinysrgb&w=300",
+      image: "https://images.pexels.com/photos/8382048/pexels-photo-8382048.jpeg?auto=compress&cs=tinysrgb&w=300",
       bio: "Leading our educational programs and community outreach initiatives."
     }
   ];
@@ -168,11 +168,11 @@ const About = () => {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300"
               >
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-80 overflow-hidden">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>

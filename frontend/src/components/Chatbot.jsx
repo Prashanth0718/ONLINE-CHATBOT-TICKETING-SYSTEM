@@ -189,7 +189,7 @@ const Chatbot = () => {
                 >
                   {darkMode ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-white" />}
                 </motion.button>
-                <select
+                {/* <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                   className="bg-white/10 text-white rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white/50"
@@ -199,7 +199,7 @@ const Chatbot = () => {
                   <option value="kn">ಕನ್ನಡ</option>
                   <option value="te">తెలుగు</option>
                   <option value="ta">தமிழ்</option>
-                </select>
+                </select> */}
               </div>
             </div>
           </div>

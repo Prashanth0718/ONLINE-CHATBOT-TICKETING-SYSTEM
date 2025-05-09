@@ -6,8 +6,7 @@ const navigation = {
     { name: "About Us", href: "/about" },
     { name: "Plan & Visit", href: "/plan-visit" },
     { name: "Guide", href: "/guide" },
-    { name: "Contact", href: "/contact" },
-    { name: "Blog", href: "/" },
+    { name: "Contact", href: "/contact" }
   ],
   support: [
     { name: "Terms and Conditions", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/terms" },
@@ -22,9 +21,9 @@ const navigation = {
     { name: "Instagram", href: "https://www.instagram.com/__.prashanth_kshatriyas18.__/", icon: Instagram },
   ],
   contact: [
-    { icon: Mail, text: "prashanthsn6363@gmail.com" },
-    { icon: Phone, text: "+91 6363690394" },
-    { icon: MapPin, text: "Somambudi Agrahara Village, Matnahalli Post,Kolar Taluk & District -563101" },
+    { icon: Mail, text: "support@museum.in" },
+    { icon: Phone, text: "+91 98765 43210" },
+    { icon: MapPin, text: "Available Across India, Partnered with Major Museums, Head Office: Bangalore, Karnataka - 560064" },
   ],
 };
 

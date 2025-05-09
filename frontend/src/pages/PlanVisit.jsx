@@ -107,9 +107,9 @@ const PlanVisit = () => {
       icon: Phone,
       title: "Contact",
       details: [
-        "Email: info@museumgo.com",
-        "Support: help@museumgo.com",
-        "Phone: +1 (555) 123-4567"
+        "Email: info@museumgo.in",
+        "Support: support@museumgo.in",
+        "Phone: +91 98765 43210"
       ]
     }
   ];

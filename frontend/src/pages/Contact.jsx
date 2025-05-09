@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Loader } from 'lucide-react';
 import Toast from '../components/ui/Toast';
+import emailjs from 'emailjs-com';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -21,10 +22,14 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+  
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        formData,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
       showToast('Message sent successfully!');
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
@@ -43,19 +48,19 @@ const Contact = () => {
     {
       icon: Phone,
       title: "Phone",
-      details: ["+91 6363690394", "+91 9731443889"],
+      details: ["+91 98765 43210", "+91 90321 67890"],
       color: "from-blue-600 to-indigo-600"
-    },
+    },    
     {
       icon: Mail,
       title: "Email",
-      details: ["prashanth@museumgo.in", "prashanthsn6363@gmail.com"],
+      details: ["info@museumgo.in", "support@museumgo.in"],
       color: "from-indigo-600 to-violet-600"
     },
     {
       icon: MapPin,
       title: "Location",
-      details: ["Somambudi Agrahara Village", "Kolar, 563101"],
+      details: ["Available Across India", "Partnered with Major Museums", "Head Office: Bangalore, Karnataka"],
       color: "from-violet-600 to-purple-600"
     }
   ];
