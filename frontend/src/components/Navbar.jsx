@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import ProfileDropdown from "./ProfileDropdown";
 import { motion } from "framer-motion";
 
-import { Ticket, Home, Calendar, MessageSquare, Ticket as TicketIcon, Settings, Info, Map } from 'lucide-react';
+import { Ticket, Landmark, Building2, Home, Calendar, MessageSquare, Ticket as TicketIcon, Settings, Info, Map } from 'lucide-react';
 const Navbar = () => {
   const { isLoggedIn, role } = useAuth();
 
@@ -33,7 +33,8 @@ const Navbar = () => {
             className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
-              <Ticket className="w-6 h-6 text-white" />
+              <Landmark className="w-6 h-6 text-white" />
+              
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
               MuseumGo
