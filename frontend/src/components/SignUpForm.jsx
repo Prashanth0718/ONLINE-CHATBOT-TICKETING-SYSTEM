@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { Link } from "react-router-dom";
 import FormField from './ui/FormField';
 import PasswordField from './ui/PasswordField';
 
@@ -233,13 +234,13 @@ const SignUpForm = ({ navigate }) => {
         
         <p className="text-xs text-center text-gray-500 mt-6">
           By creating an account, you agree to our{" "}
-          <a href="#" className="text-indigo-600 hover:text-indigo-800 transition-colors">
+          <Link to="/terms-of-service" className="text-indigo-600 hover:text-indigo-800 transition-colors">
             Terms of Service
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a href="#" className="text-indigo-600 hover:text-indigo-800 transition-colors">
-            Privacy Policy
-          </a>
+          <Link to="/privacy-policy" className="text-indigo-600 hover:text-indigo-800 transition-colors">
+          Privacy Policy
+        </Link>
         </p>
       </form>
     </>

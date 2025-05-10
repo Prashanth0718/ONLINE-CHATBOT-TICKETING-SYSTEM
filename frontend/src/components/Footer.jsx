@@ -9,10 +9,10 @@ const navigation = {
     { name: "Contact", href: "/contact" }
   ],
   support: [
-    { name: "Terms and Conditions", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/terms" },
-    { name: "Privacy Policy", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/privacy" },
-    { name: "Cancellation and Refund Policy", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/refund" },
-    { name: "Shipping and Delivery Policy", href: "https://merchant.razorpay.com/policy/PxvBZpRFn3qLEU/shipping" },
+  { name: "Terms and Services", href: "/terms-of-service" },
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Refund Policy", href: "/refund-policy" },
+  { name: "Cookie Policy", href: "/cookie-policy" },
   ],
   social: [
     { name: "Facebook", href: "https://www.facebook.com/prashanth.sn.2003", icon: Facebook },
