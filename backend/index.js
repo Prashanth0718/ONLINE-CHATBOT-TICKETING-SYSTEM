@@ -26,6 +26,7 @@ const corsOptions = {
   credentials: true,
 };
 
+// Enable CORS with options
 app.use(cors(corsOptions));
 
 //app.use(cors());
