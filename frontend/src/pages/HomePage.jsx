@@ -5,6 +5,7 @@ import { Ticket, MessageSquare, Shield, Clock, ChevronRight } from 'lucide-react
 import HeroSection from "../components/HeroSection";
 
 const HomePage = () => {
+  const isLoggedIn = !!localStorage.getItem("token");
   const features = [
     {
       icon: MessageSquare,
@@ -274,12 +275,13 @@ const HomePage = () => {
               Join thousands of users who are discovering art and culture through our platform.
             </p>
             <Link
-              to="/signup"
+              to={isLoggedIn ? "/chatbot" : "/signup"} // redirect logged-in users
               className="inline-flex items-center px-6 py-3 text-lg font-semibold bg-white text-blue-600 rounded-xl hover:bg-blue-50 transition-colors duration-300"
             >
               Get Started
               <ChevronRight className="w-5 h-5 ml-2" />
             </Link>
+
           </motion.div>
         </div>
       </section>
