@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import { motion } from "framer-motion";
-
-// Register Chart.js components
+import { motion, AnimatePresence } from "framer-motion";
+import { TrendingUp, Users, MessageSquare, DollarSign, Building, Loader } from 'lucide-react';
+import { FaRupeeSign } from "react-icons/fa"; 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const DashboardOverview = () => {
@@ -24,9 +24,6 @@ const DashboardOverview = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("📊 API Response:", response.data);
-
-      // Ensure valid response
       const data = response.data || {
         totalBookings: 0,
         ticketBookings: 0,
@@ -38,127 +35,213 @@ const DashboardOverview = () => {
       setAnalytics(data);
       setLoading(false);
     } catch (error) {
-      console.error("❌ Error fetching analytics:", error);
+      console.error("Error fetching analytics:", error);
       setLoading(false);
-      setError("Failed to load analytics.");
+      setError("Failed to load analytics data");
     }
   };
 
-  // const chartData = analytics
-  //   ? {
-  //       labels: Object.keys(analytics.museumBookings),
-  //       datasets: [
-  //         {
-  //           label: "Museum Bookings",
-  //           data: Object.values(analytics.museumBookings),
-  //           backgroundColor: "rgba(54, 162, 235, 0.6)",
-  //           borderColor: "rgba(54, 162, 235, 1)",
-  //           borderWidth: 1,
-  //         },
-  //       ],
-  //     }
-  //   : null;
-
-    const chartData = analytics && analytics.museumBookings
+  const chartData = analytics && analytics.museumBookings
     ? {
         labels: Object.keys(analytics.museumBookings),
-        datasets: [
-          {
-            label: "Museum Bookings",
-            data: Object.values(analytics.museumBookings),
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-        ],
+        datasets: [{
+          label: "Museum Bookings",
+          data: Object.values(analytics.museumBookings),
+          backgroundColor: "rgba(79, 70, 229, 0.6)",
+          borderColor: "rgba(79, 70, 229, 1)",
+          borderWidth: 1,
+          borderRadius: 8,
+          hoverBackgroundColor: "rgba(99, 102, 241, 0.8)",
+        }],
       }
-    : { labels: [], datasets: [] }; 
+    : { labels: [], datasets: [] };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        titleColor: "#1F2937",
+        bodyColor: "#4F46E5",
+        borderColor: "#E5E7EB",
+        borderWidth: 1,
+        padding: 12,
+        cornerRadius: 8,
+        titleFont: {
+          size: 14,
+          weight: "bold",
+        },
+        bodyFont: {
+          size: 13,
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          font: {
+            family: "'Inter', sans-serif",
+          },
+        },
+      },
+      y: {
+        grid: {
+          color: "rgba(243, 244, 246, 1)",
+        },
+        ticks: {
+          font: {
+            family: "'Inter', sans-serif",
+          },
+        },
+      },
+    },
+    animation: {
+      duration: 2000,
+      easing: "easeOutQuart",
+    },
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+      },
+    },
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+        <div className="flex items-center space-x-3">
+          <Loader className="w-6 h-6 animate-spin text-blue-600" />
+          <span className="text-lg font-medium text-gray-700">Loading dashboard data...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="p-6 bg-white shadow-xl rounded-lg max-w-7xl mx-auto"
-    >
-      <h3 className="text-3xl font-semibold text-center text-blue-700 mb-8">Dashboard Overview</h3>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="max-w-7xl mx-auto space-y-8"
+      >
+        <motion.div variants={itemVariants} className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900">
+            Dashboard
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+              Overview
+            </span>
+          </h1>
+          <p className="mt-3 text-lg text-gray-600">Monitor your museum's performance and analytics</p>
+        </motion.div>
 
-      {loading ? (
-        <p className="text-center text-gray-500">Loading analytics...</p>
-      ) : error ? (
-        <p className="text-center text-red-500">{error}</p>
-      ) : analytics ? (
-        <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {/* Total Bookings */}
+        <AnimatePresence>
+          {error ? (
             <motion.div
-              className="bg-blue-500 p-6 rounded-lg shadow-xl text-white text-center"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center justify-center"
             >
-              <h4 className="text-xl font-semibold">Total Bookings</h4>
-              <p className="text-3xl font-bold">{analytics.totalBookings}</p>
+              {error}
             </motion.div>
+          ) : (
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+                className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/80 font-medium">Total Bookings</p>
+                    <h3 className="text-3xl font-bold mt-2">{analytics?.totalBookings || 0}</h3>
+                  </div>
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </motion.div>
 
-            {/* Total Revenue */}
-            <motion.div
-              className="bg-green-500 p-6 rounded-lg shadow-xl text-white text-center"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <h4 className="text-xl font-semibold">Total Revenue</h4>
-              <p className="text-3xl font-bold">
-              ₹{analytics.totalRevenue ? analytics.totalRevenue.toFixed(2) : "0.00"}
-              </p>
-            </motion.div>
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+                className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl p-6 text-white shadow-lg"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/80 font-medium">Total Revenue</p>
+                    <h3 className="text-3xl font-bold mt-2">
+                      ₹{analytics?.totalRevenue?.toFixed(2) || "0.00"}
+                    </h3>
+                  </div>
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                    {/* <DollarSign className="w-6 h-6 text-white" /> */}
+                   <FaRupeeSign />
+                  </div>
+                </div>
+              </motion.div>
 
-            {/* Chatbot Queries */}
-            <motion.div
-              className="bg-yellow-500 p-6 rounded-lg shadow-xl text-white text-center"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <h4 className="text-xl font-semibold">Chatbot Queries</h4>
-              <p className="text-3xl font-bold">{analytics.chatbotQueries}</p>
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+                className="bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/80 font-medium">Chatbot Queries</p>
+                    <h3 className="text-3xl font-bold mt-2">{analytics?.chatbotQueries || 0}</h3>
+                  </div>
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                    <MessageSquare className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div
+          variants={itemVariants}
+          className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Museum Bookings Overview</h2>
+            <Building className="w-6 h-6 text-blue-600" />
           </div>
-
-          {/* Museum Bookings Chart */}
-          <div className="mb-8">
-            <h4 className="text-xl font-semibold text-gray-700 mb-4">Museum Bookings</h4>
-            <motion.div
-              className="w-full bg-gray-50 rounded-lg p-6 shadow-lg"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Bar
-                data={chartData}
-                options={{
-                  responsive: true,
-                  aspectRatio: 2,
-                  plugins: {
-                    legend: { display: false },
-                    title: {
-                      display: true,
-                      text: "Museum Ticket Sales",
-                      font: { size: 16 },
-                    },
-                  },
-                  scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { display: true } },
-                  },
-                }}
-              />
-            </motion.div>
+          <div className="h-[400px]">
+            <Bar data={chartData} options={chartOptions} />
           </div>
-        </div>
-      ) : (
-        <p className="text-center text-gray-500">No analytics data available.</p>
-      )}
-    </motion.div>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
