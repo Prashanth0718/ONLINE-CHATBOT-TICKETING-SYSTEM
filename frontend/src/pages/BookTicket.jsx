@@ -14,11 +14,11 @@ const BookTicket = () => {
   const [visitors, setVisitors] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     const fetchMuseums = async () => {
       try {
-        const { data } = await axios.get("https://museumgo-backend.onrender.com/api/museums");
+        const { data } = await axios.get(`${backendURL}/api/museums`);
         setMuseumList(data); // Set the fetched museums in state
       } catch (error) {
         console.error("Error fetching museums:", error);
@@ -108,7 +108,7 @@ const BookTicket = () => {
       }
 
       const { data } = await axios.post(
-        "https://museumgo-backend.onrender.com/api/payment/create-order",
+        `${backendURL}/api/payment/create-order`,
         { amount: price, currency: "INR" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -122,7 +122,7 @@ const BookTicket = () => {
         order_id: data.orderId,
         handler: async function (response) {
           await axios.post(
-            "https://museumgo-backend.onrender.com/api/payment/verify",
+            `${backendURL}/api/payment/verify`,
             {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,

@@ -7,7 +7,7 @@ import { Download, Ban, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 const MyTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     document.title = "My Tickets - MuseumGo";
 
@@ -20,7 +20,7 @@ const MyTickets = () => {
       }
 
       try {
-        const res = await axios.get("https://museumgo-backend.onrender.com/api/tickets/my-tickets", {
+        const res = await axios.get(`${backendURL}/api/tickets/my-tickets`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTickets(res.data);
@@ -43,7 +43,7 @@ const MyTickets = () => {
       Ticket ID: ${ticket._id}
       Museum: ${ticket.museumName}
       Date: ${formatDate(ticket.date)}
-      Price: $${ticket.price}
+      Price: ₹${ticket.price}
       Status: ${ticket.status}
     `;
 
@@ -67,7 +67,7 @@ const MyTickets = () => {
 
     try {
       await axios.delete(
-        `https://museumgo-backend.onrender.com/api/tickets/cancel/${ticketId}`,
+        `${backendURL}/api/tickets/cancel/${ticketId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

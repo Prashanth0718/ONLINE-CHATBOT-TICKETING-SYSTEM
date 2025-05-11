@@ -7,6 +7,7 @@ const ManagePayments = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -38,7 +39,7 @@ const ManagePayments = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("https://museumgo-backend.onrender.com/api/payments", {
+      const response = await axios.get(`${backendURL}/api/payments`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,7 +57,7 @@ const ManagePayments = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `https://museumgo-backend.onrender.com/api/payments/${id}`,
+        `${backendURL}/api/payments/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -82,7 +83,7 @@ const ManagePayments = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`https://museumgo-backend.onrender.com/api/payments/${id}`, {
+      await axios.delete(`${backendURL}/api/payments/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

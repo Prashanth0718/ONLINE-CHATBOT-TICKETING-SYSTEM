@@ -7,6 +7,7 @@ const ManageTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,7 +43,7 @@ const ManageTickets = () => {
         return;
       }
 
-      const response = await axios.get("https://museumgo-backend.onrender.com/api/tickets/all", {
+      const response = await axios.get(`${backendURL}/api/tickets/all`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
@@ -60,7 +61,7 @@ const ManageTickets = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`https://museumgo-backend.onrender.com/api/admin/bookings/${id}`, {
+      await axios.delete(`${backendURL}/api/admin/bookings/${id}`, {
         headers: { 
           Authorization: `Bearer ${token}`
         },
@@ -78,7 +79,7 @@ const ManageTickets = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `https://museumgo-backend.onrender.com/api/tickets/${id}`,
+        `${backendURL}/api/tickets/${id}`,
         { status: newStatus },
         {
           headers: { 

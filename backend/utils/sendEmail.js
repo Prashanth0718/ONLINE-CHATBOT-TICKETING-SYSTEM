@@ -9,7 +9,7 @@ const sendResetEmail = async (email, resetToken) => {
     },
   });
 
-  const resetLink = `https://museumgo.in/reset-password/${resetToken}`;
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
   await transporter.sendMail({
     from: '"MuseumGo" <prashanthsn6363@gmail.com>',

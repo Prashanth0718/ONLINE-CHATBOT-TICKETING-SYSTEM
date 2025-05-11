@@ -15,7 +15,7 @@ const SignIn = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const SignIn = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("https://museumgo-backend.onrender.com/api/auth/login", {
+      const res = await axios.post(`${backendURL}/api/auth/login`, {
         email,
         password,
       });
@@ -52,7 +52,7 @@ const SignIn = () => {
     e.preventDefault();
     setResetLoading(true);
     try {
-      await axios.post("https://museumgo-backend.onrender.com/api/auth/forgot-password", {
+      await axios.post(`${backendURL}/api/auth/forgot-password`, {
         email: resetEmail
       });
       showToast("Password reset instructions sent to your email!");

@@ -10,6 +10,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [showPassword, setShowPassword] = useState({
     new: false,
     confirm: false
@@ -31,7 +32,7 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      await axios.post("https://museumgo-backend.onrender.com/api/auth/reset-password", {
+      await axios.post(`${backendURL}/api/auth/reset-password`, {
         token,
         newPassword
       });

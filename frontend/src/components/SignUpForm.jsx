@@ -20,13 +20,12 @@ const SignUpForm = ({ navigate }) => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const clearFieldError = (field) =>
     setFieldErrors((prev) => ({ ...prev, [field]: null }));
-
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setMessage(null);
+    setMessage(null); 
     setFieldErrors({});
 
     if (password !== confirmPassword) {
@@ -36,7 +35,7 @@ const SignUpForm = ({ navigate }) => {
 
     setLoading(true);
     try {
-      await axios.post("https://museumgo-backend.onrender.com/api/auth/register", {
+      await axios.post(`${backendURL}/api/auth/register`, {
         name,
         email,
         phone,

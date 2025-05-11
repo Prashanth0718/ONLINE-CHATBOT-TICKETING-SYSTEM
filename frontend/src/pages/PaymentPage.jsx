@@ -4,28 +4,27 @@ import axios from "axios";
 const PaymentPage = () => {
   const [amount, setAmount] = useState("");
   const token = localStorage.getItem("token");
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const handlePayment = async () => {
     try {
       const { data } = await axios.post(
-        "https://museumgo-backend.onrender.com/api/payment/create-order",  // ✅ Fixed route name
+        `${backendURL}/api/payment/create-order`,  // ✅ Fixed route name
         { amount },
         { headers: { Authorization: `Bearer ${token}` } }
       );
   
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,  // ✅ Use this for Vite
-        //key: process.env.REACT_APP_RAZORPAY_KEY_ID,  // ✅ Use environment variable
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,  
         amount: data.amount,
         currency: "INR",
         name: "Museum Ticket",
         description: "Purchase your museum ticket",
-        order_id: data.orderId,  // ✅ Fixed order ID reference
+        order_id: data.orderId,  
         handler: async (response) => {
           console.log("✅ Payment Successful:", response);
   
           await axios.post(
-            "https://museumgo-backend.onrender.com/api/payment/verify",
+            `${backendURL}/api/payment/verify`,
             { ...response },
             { headers: { Authorization: `Bearer ${token}` } }
           );

@@ -9,7 +9,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
@@ -19,7 +19,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("https://museumgo-backend.onrender.com/api/auth/forgot-password", { email });
+      await axios.post(`${backendURL}/api/auth/forgot-password`, { email });
       showToast("Password reset instructions sent to your email!");
       setEmail("");
     } catch (error) {

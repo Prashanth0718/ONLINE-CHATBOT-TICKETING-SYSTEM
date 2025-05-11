@@ -9,11 +9,11 @@ const VerifyTicket = () => {
   const [ticket, setTicket] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const res = await axios.get(`https://museumgo-backend.onrender.com/api/tickets/${ticketId}`);
+        const res = await axios.get(`${backendURL}/api/tickets/${ticketId}`);
         setTicket(res.data.ticket);
       } catch (err) {
         setError("Invalid ticket or verification failed");

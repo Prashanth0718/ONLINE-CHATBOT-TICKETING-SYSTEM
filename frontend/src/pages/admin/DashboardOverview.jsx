@@ -11,6 +11,7 @@ const DashboardOverview = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     fetchAnalytics();
@@ -19,7 +20,7 @@ const DashboardOverview = () => {
   const fetchAnalytics = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("https://museumgo-backend.onrender.com/api/analytics/admin-dashboard", {
+      const response = await axios.get(`${backendURL}/api/analytics/admin-dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
