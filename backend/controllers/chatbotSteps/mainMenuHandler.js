@@ -1,11 +1,8 @@
 const axios = require("axios");
 const Museum = require("../../models/Museum");
-import dotenv from 'dotenv';
-dotenv.config();
 
 const handleMainMenu = async ({ req, userMessage, session, response }) => {
   const normalizedInput = userMessage.trim().toLowerCase().replace(/[^\w\s]/g, "");
-  const backendURL = process.env.BACKEND_URL;
   //const normalizedInput = userMessage.toLowerCase().replace(/[^\w\s]/g, "").trim();
   console.log("Normalized Input:", normalizedInput);
   // 🏠 Go Back to Main Menu
@@ -64,7 +61,7 @@ if (
       session.step = "main_menu";
     } else {
       try {
-        const ticketResponse = await axios.get(`${backendURL}/api/tickets/my-tickets`, {
+        const ticketResponse = await axios.get("https://museumgo-backend.onrender.com/api/tickets/my-tickets", {
           headers: { Authorization: token },
         });
         const tickets = ticketResponse.data;
@@ -111,7 +108,7 @@ if (
       session.step = "main_menu";
     } else {
       try {
-        const ticketResponse = await axios.get(`${backendURL}/api/tickets/my-tickets`, {
+        const ticketResponse = await axios.get("https://museumgo-backend.onrender.com/api/tickets/my-tickets", {
           headers: { Authorization: token },
         });
         const tickets = ticketResponse.data;

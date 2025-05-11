@@ -20,13 +20,17 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 const corsOptions = {
-  origin: process.env.CORS_ORIGINS?.split(","),
-  methods: process.env.CORS_METHODS?.split(","),
-  allowedHeaders: process.env.CORS_ALLOWED_HEADERS?.split(","),
+  origin: [
+    "http://localhost:5173",
+    "https://museumgo.in",
+    "https://www.museumgo.in",
+    "https://prashanthsn-museumgo.netlify.app",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
-// Enable CORS with options
 app.use(cors(corsOptions));
 
 //app.use(cors());
