@@ -12,7 +12,7 @@ const sendCancellationEmail = async (email, ticket) => {
   const formattedDate = new Date(ticket.date).toDateString();
 
   const mailOptions = {
-    from: '"MuseumGo" <prashanthsn6363@gmail.com>',
+    from: '"MuseumGo" <support@museumgo.in>',
     to: email,
     subject: "🎫 Ticket Cancellation Confirmation",
     html: `

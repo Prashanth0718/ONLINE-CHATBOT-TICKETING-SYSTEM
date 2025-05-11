@@ -8,7 +8,7 @@ const generateTicketPdf = async (ticketData) => {
     const doc = new PDFDocument();
     const filePath = path.join(__dirname, `../tickets/ticket-${ticketData.paymentId}.pdf`);
     const writeStream = fs.createWriteStream(filePath);
-
+    const backendURL = process.env.BACKEND_URL;
     doc.pipe(writeStream);
 
     doc.fontSize(20).text('Museum Entry Ticket', { align: 'center' });
@@ -23,7 +23,7 @@ const generateTicketPdf = async (ticketData) => {
     doc.moveDown();
 
     // ✅ Generate QR Code with secure verification URL
-    const verificationUrl = `https://museumgo-backend.onrender.com/api/tickets/verify/${ticketData._id}`; // Update this line
+    const verificationUrl = `${backendURL}/api/tickets/verify/${ticketData._id}`; // Update this line
     const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
     // Convert base64 Data URL to buffer
