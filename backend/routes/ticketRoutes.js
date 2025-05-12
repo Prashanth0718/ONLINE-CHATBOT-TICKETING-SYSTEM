@@ -7,7 +7,8 @@ const {
     getUserTickets, 
     cancelTicket, 
     getAllTickets,
-    updateTicket
+    updateTicket,
+    downloadTicket
 } = require("../controllers/ticketController");
 const { authMiddleware, adminOnly } = require("../middleware/authMiddleware");
 
@@ -28,6 +29,8 @@ router.get("/my-tickets", authMiddleware, getUserTickets);
 router.delete("/cancel/:id", authMiddleware, cancelTicket);
 
 router.put("/:id", authMiddleware, adminOnly, updateTicket);
+
+router.get("/download/:ticketId", authMiddleware, downloadTicket);
 
 router.get("/verify/:ticketId", async (req, res) => {
     try {

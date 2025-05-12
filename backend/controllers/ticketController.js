@@ -7,6 +7,7 @@ const updateAnalyticsOnCancellation = require("../utils/updateAnalyticsOnCancell
 const Museum = require("../models/Museum");
 const User = require("../models/User");
 const sendCancellationEmail = require("../utils/sendCancellationEmail");
+const generateTicketPdf = require('../utils/generateTicketPdf');
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -315,4 +316,20 @@ const updateTicket = async (req, res) => {
 
 
 
-module.exports = { createTicket, cancelTicket, getUserTickets, getAllTickets, updateTicket };
+const downloadTicket = async (req, res) => {
+  try {
+    const ticketId = req.params.ticketId;
+    const ticket = await Ticket.findById(ticketId);
+
+    if (!ticket) return res.status(404).send("Ticket not found");
+
+    const filePath = await generateTicketPdf(ticket); // Generates PDF and returns path
+    res.download(filePath); // Sends file to client
+  } catch (err) {
+    console.error("❌ Error generating ticket PDF:", err);
+    res.status(500).send("Error generating PDF");
+  }
+};
+
+
+module.exports = { createTicket, cancelTicket, getUserTickets, getAllTickets, updateTicket, downloadTicket };

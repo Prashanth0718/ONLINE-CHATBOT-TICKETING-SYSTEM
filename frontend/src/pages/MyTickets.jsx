@@ -36,25 +36,30 @@ const MyTickets = () => {
 
   const formatDate = (dateString) => format(new Date(dateString), "MMM dd, yyyy");
 
-  const downloadTicket = (ticket) => {
-    const ticketData = `
-      🎟️ Ticket Details:
-      ------------------
-      Ticket ID: ${ticket._id}
-      Museum: ${ticket.museumName}
-      Date: ${formatDate(ticket.date)}
-      Price: ₹${ticket.price}
-      Status: ${ticket.status}
-    `;
+const downloadTicket = async (ticket) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${backendURL}/api/tickets/download/${ticket._id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: "blob", // Important for binary data
+    });
 
-    const blob = new Blob([ticketData], { type: "text/plain" });
+    const blob = new Blob([res.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `ticket_${ticket._id}.txt`;
+    link.href = url;
+    link.download = `ticket_${ticket._id}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("❌ Error downloading PDF:", error);
+    alert("⚠️ Failed to download ticket PDF.");
+  }
+};
+
 
   const cancelTicket = async (ticketId) => {
     if (!window.confirm("Are you sure you want to cancel this ticket?")) return;
