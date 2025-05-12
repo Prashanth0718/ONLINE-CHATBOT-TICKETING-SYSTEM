@@ -11,11 +11,12 @@ const Navbar = () => {
 
     { name: "Home", to: "/", icon: Home },
     { name: "Plan Visit", to: "/plan-visit", icon: Map },
-    { name: "Book Ticket", to: "/book-ticket", icon: Calendar },
     { name: "Chatbot", to: "/chatbot", icon: MessageSquare },
+    { name: "My Tickets", to: "/my-tickets", icon: Ticket }, 
   ];
 
   if (role === "admin") {
+    navItems.push({ name: "Book Ticket", to: "/book-ticket", icon: Calendar });
     navItems.push({ name: "Admin Panel", to: "/admin", icon: Settings });
   }
 
