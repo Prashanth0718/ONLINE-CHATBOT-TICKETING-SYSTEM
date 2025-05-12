@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { Bar, Line } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement } from "chart.js";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Users, MessageSquare, DollarSign, Building, Loader } from 'lucide-react';
-import { FaRupeeSign } from "react-icons/fa"; 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import { BarChart as ChartBar, Users, Building2, CreditCard, MessageSquare, Loader } from 'lucide-react';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const DashboardOverview = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -33,11 +42,11 @@ const DashboardOverview = () => {
       };
 
       setAnalytics(data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching analytics:", error);
-      setLoading(false);
       setError("Failed to load analytics data");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,9 +122,9 @@ const DashboardOverview = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-      },
-    },
+        staggerChildren: 0.1
+      }
+    }
   };
 
   const itemVariants = {
@@ -125,9 +134,9 @@ const DashboardOverview = () => {
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 100,
-      },
-    },
+        stiffness: 100
+      }
+    }
   };
 
   if (loading) {
@@ -172,7 +181,7 @@ const DashboardOverview = () => {
           ) : (
             <motion.div
               variants={containerVariants}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
             >
               <motion.div
                 variants={itemVariants}
@@ -185,7 +194,7 @@ const DashboardOverview = () => {
                     <h3 className="text-3xl font-bold mt-2">{analytics?.totalBookings || 0}</h3>
                   </div>
                   <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-white" />
+                    <Users className="w-6 h-6 text-white" />
                   </div>
                 </div>
               </motion.div>
@@ -203,8 +212,7 @@ const DashboardOverview = () => {
                     </h3>
                   </div>
                   <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
-                    {/* <DollarSign className="w-6 h-6 text-white" /> */}
-                   <FaRupeeSign />
+                    <CreditCard className="w-6 h-6 text-white" />
                   </div>
                 </div>
               </motion.div>
@@ -213,6 +221,24 @@ const DashboardOverview = () => {
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
                 className="bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/80 font-medium">Active Museums</p>
+                    <h3 className="text-3xl font-bold mt-2">
+                      {Object.keys(analytics?.museumBookings || {}).length}
+                    </h3>
+                  </div>
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+                className="bg-gradient-to-br from-amber-600 to-orange-600 rounded-2xl p-6 text-white shadow-lg"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -234,10 +260,35 @@ const DashboardOverview = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Museum Bookings Overview</h2>
-            <Building className="w-6 h-6 text-blue-600" />
+            <ChartBar className="w-6 h-6 text-blue-600" />
           </div>
           <div className="h-[400px]">
             <Bar data={chartData} options={chartOptions} />
+          </div>
+        </motion.div>
+
+        <motion.div
+          variants={itemVariants}
+          className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Booking Trends</h2>
+            <ChartBar className="w-6 h-6 text-blue-600" />
+          </div>
+          <div className="h-[400px]">
+            <Line
+              data={{
+                ...chartData,
+                datasets: [{
+                  ...chartData.datasets[0],
+                  borderColor: "rgba(79, 70, 229, 1)",
+                  backgroundColor: "rgba(79, 70, 229, 0.1)",
+                  fill: true,
+                  tension: 0.4,
+                }]
+              }}
+              options={chartOptions}
+            />
           </div>
         </motion.div>
       </motion.div>
