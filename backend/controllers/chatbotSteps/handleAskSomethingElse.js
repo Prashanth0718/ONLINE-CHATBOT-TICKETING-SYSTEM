@@ -1,5 +1,6 @@
-const { askGemini } = require("../../utils/gemini");
+//const { askGemini } = require("../../utils/gemini");
 const Analytics = require("../../models/Analytics"); // ✅ Import Analytics model
+const { askOpenRouter } = require("../../utils/askOpenRouter"); // ✅ Import OpenRouter function
 const updateChatbotQueries = async () => {
   // Find current analytics
   let analytics = await Analytics.findOne();
@@ -56,16 +57,32 @@ const handleAskSomethingElse = async ({ userMessage, session, response }) => {
     return;
   }
 
+  // try {
+  //   const answer = await askGemini(userMessage);
+  //   response.message = `🤖 ${answer}`;
+  //   session.step = "post_info_suggestions";
+  //   session.awaitingCustomQuestion = false;
+  //   response.options = ["❓ Ask another question", "🏠 Go back to Main Menu"];
+    
+  //   // Call the function to increment chatbot queries after processing the user's message
+  //   await updateChatbotQueries();
+
+  // } catch (error) {
+  //   console.error("❌ Error in custom question flow:", error.message || error);
+  //   response.message = "⚠️ Sorry, I couldn't get an answer for that. Please try again.";
+  //   response.options = ["❓ Ask another question", "🏠 Go back to Main Menu"];
+  //   session.step = "post_info_suggestions";
+  //   session.awaitingCustomQuestion = false;
+  // }
+
+
   try {
-    const answer = await askGemini(userMessage);
+    const answer = await askOpenRouter(userMessage);
     response.message = `🤖 ${answer}`;
     session.step = "post_info_suggestions";
     session.awaitingCustomQuestion = false;
     response.options = ["❓ Ask another question", "🏠 Go back to Main Menu"];
-    
-    // Call the function to increment chatbot queries after processing the user's message
     await updateChatbotQueries();
-
   } catch (error) {
     console.error("❌ Error in custom question flow:", error.message || error);
     response.message = "⚠️ Sorry, I couldn't get an answer for that. Please try again.";
@@ -73,6 +90,7 @@ const handleAskSomethingElse = async ({ userMessage, session, response }) => {
     session.step = "post_info_suggestions";
     session.awaitingCustomQuestion = false;
   }
+
 };
 
 
