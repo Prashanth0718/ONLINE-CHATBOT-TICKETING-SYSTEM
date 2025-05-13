@@ -238,7 +238,7 @@ const SignIn = () => {
                   transition={{ delay: 0.5 }}
                 >
                   <p>
-                    New to our museum?{" "}
+                    New to MuseumGo?{" "}
                     <Link to="/signup" className="text-blue-600 font-semibold hover:text-blue-800 transition-colors">
                       Create an account
                     </Link>

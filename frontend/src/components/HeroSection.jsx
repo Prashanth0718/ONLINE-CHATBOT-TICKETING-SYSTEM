@@ -5,7 +5,7 @@ import { Ticket, ArrowRight } from 'lucide-react';
 
 const HeroSection = () => {
   const navigate = useNavigate();
-
+  const isLoggedIn = !!localStorage.getItem("token");
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white py-20 sm:py-32">
       {/* Decorative elements */}
@@ -42,16 +42,16 @@ const HeroSection = () => {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <Link
-              to="/chatbot"
+              to={isLoggedIn ? "/chatbot" : "/signin"}
               className="group flex items-center px-6 py-3 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:shadow-lg hover:shadow-blue-200 transition-all duration-300"
             >
-              <Ticket className="w-5 h-5 mr-2" />
+              
               Book Now
               <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link
-              to="/about"
-              className="group px-6 py-3 text-base font-semibold text-gray-700 bg-white rounded-xl hover:bg-gray-50 hover:text-blue-600 transition-all duration-300"
+              to={isLoggedIn ? "/about" : "/signin"}
+              className="group px-4 py-3 text-base font-semibold text-gray-700 bg-white rounded-xl hover:bg-gray-50 hover:text-blue-600 transition-all duration-300"
             >
              <motion.div
                 whileHover={{ x: 5 }}

@@ -275,7 +275,7 @@ const HomePage = () => {
               Join thousands of users who are discovering art and culture through our platform.
             </p>
             <Link
-              to={isLoggedIn ? "/chatbot" : "/signup"} // redirect logged-in users
+              to={isLoggedIn ? "/chatbot" : "/signin"} // redirect logged-in users
               className="inline-flex items-center px-6 py-3 text-lg font-semibold bg-white text-blue-600 rounded-xl hover:bg-blue-50 transition-colors duration-300"
             >
               Get Started
