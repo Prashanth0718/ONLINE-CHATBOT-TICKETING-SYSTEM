@@ -10,7 +10,6 @@ import PrivateRoute from "./components/PrivateRoute";
 import PlanVisit from './pages/PlanVisit';
 import About from './pages/About';
 import ProfilePage from "./pages/ProfilePage";
-import PaymentPage from "./pages/PaymentPage";
 import BookTicket from "./pages/BookTicket";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -37,31 +36,31 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/book-ticket" element={<BookTicket />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/chatbot" element={<ChatbotPage />} />
-            <Route path="/plan-visit" element={<PlanVisit />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/guide" element={<Guide />} />
-            <Route path="/chatbot" element={<ChatbotPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/verify/:ticketId" element={<VerifyTicket />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/refund-policy" element={<RefundPolicy />} />
-            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            
 
             {/* ✅ Protected Routes */}
             <Route element={<PrivateRoute allowedRoles={["user", "admin"]} />}>
               <Route path="/my-tickets" element={<MyTickets />} />
+              <Route path="/chatbot" element={<ChatbotPage />} />
+              <Route path="/plan-visit" element={<PlanVisit />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/guide" element={<Guide />} />
+              <Route path="/book-ticket" element={<BookTicket />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
               <Route path="/admin" element={<AdminDashboard />} />
             </Route>
 
-            <Route path="/payment" element={<PaymentPage />} />
+            
             {/* 🚨 Catch-all for 404s */}
             <Route path="*" element={<NotFound />} />
           </Routes>
