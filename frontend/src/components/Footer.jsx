@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Github, Instagram, Mail, Phone, MapPin } from 'lucide-react';
-
+import { useAuth } from "../context/AuthContext";
 const navigation = {
   main: [
     { name: "About Us", href: "/about" },
@@ -28,6 +28,8 @@ const navigation = {
 };
 
 const Footer = () => {
+  const { isLoggedIn, role } = useAuth();
+  const shouldShowProtectedLink = isLoggedIn;
   return (
     <footer className="bg-white border-t border-gray-100">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -61,7 +63,8 @@ const Footer = () => {
               {navigation.main.map((item) => (
                 <li key={item.name}>
                   <Link
-                    to={item.href}
+                    to={shouldShowProtectedLink ? item.href : "/signin"}
+                    state={!shouldShowProtectedLink ? { from: item.href } : {}}
                     className="text-gray-500 hover:text-blue-600 transition-colors duration-200 text-sm"
                   >
                     {item.name}
@@ -80,7 +83,8 @@ const Footer = () => {
               {navigation.support.map((item) => (
                 <li key={item.name}>
                   <Link
-                    to={item.href}
+                    to={shouldShowProtectedLink ? item.href : "/signin"}
+                    state={!shouldShowProtectedLink ? { from: item.href } : {}}
                     className="text-gray-500 hover:text-blue-600 transition-colors duration-200 text-sm"
                   >
                     {item.name}
