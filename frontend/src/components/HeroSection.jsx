@@ -49,13 +49,18 @@ const HeroSection = () => {
               Book Now
               <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-
-            <button
-              onClick={() => navigate('/about')}
+            <Link
+              to="/about"
               className="group px-6 py-3 text-base font-semibold text-gray-700 bg-white rounded-xl hover:bg-gray-50 hover:text-blue-600 transition-all duration-300"
             >
+             <motion.div
+                whileHover={{ x: 5 }}
+                className="inline-flex items-center"
+             >
               Learn More
-            </button>
+              <ArrowRight className="w-8 h-4 mr-2" />
+              </motion.div>
+            </Link>
           </motion.div>
 
           {/* Stats */}
