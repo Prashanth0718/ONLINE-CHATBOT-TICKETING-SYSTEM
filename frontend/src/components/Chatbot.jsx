@@ -29,58 +29,78 @@ const Chatbot = () => {
   };
 
   const sendMessage = async (message) => {
-    if (!message.trim()) return;
+  if (!message.trim()) return;
 
-    let token = localStorage.getItem("token");
-    if (isTokenExpired(token)) {
-      token = await refreshToken();
-      if (!token) {
-        showToast("Session expired. Please login again.", "error");
-        navigate("/signin");
-        return;
-      }
+  // ✅ Handle Pay Now button click
+   if (message === "Pay Now 💳" && session.paymentDetails) {
+    openRazorpayCheckout({
+      orderId: session.paymentDetails.orderId,
+      amount: session.paymentDetails.amount,
+      currency: session.paymentDetails.currency,
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID, // or use directly from session if set
+    });
+    return; // ❗️Prevents backend call
+  }
+
+  let token = localStorage.getItem("token");
+  if (isTokenExpired(token)) {
+    token = await refreshToken();
+    if (!token) {
+      showToast("Session expired. Please login again.", "error");
+      navigate("/signin");
+      return;
+    }
+  }
+
+  const newMessages = [...messages, { text: message, sender: "user" }];
+  setMessages(newMessages);
+  setUserMessage("");
+  setIsTyping(true);
+
+  try {
+    const response = await axios.post(
+      `${backendURL}/api/chatbot`,
+      { userMessage: message, session, language },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const botResponse = response.data.response || {};
+    const replyText = botResponse.message || botResponse.reply ||
+      (typeof botResponse === "string" ? botResponse : "🤖 Sorry, I didn't understand that.");
+
+    const botMessage = {
+      text: replyText,
+      sender: "bot",
+      options: botResponse.options || []
+    };
+
+    setMessages([...newMessages, botMessage]);
+
+    // ✅ Save Razorpay payment details to session, but don't trigger checkout yet
+    if (botResponse.orderId && botResponse.amount) {
+      setSession(prev => ({
+        ...prev,
+        latestPaymentData: {
+          ...botResponse
+        }
+      }));
+
+      // Optional UX cleanup
+      setMessages(prev => {
+        const last = { ...prev[prev.length - 1], options: [] };
+        return [...prev.slice(0, -1), last];
+      });
     }
 
-    const newMessages = [...messages, { text: message, sender: "user" }];
-    setMessages(newMessages);
-    setUserMessage("");
-    setIsTyping(true);
+    setSession(response.data.session);
+  } catch (error) {
+    console.error("Chatbot error:", error);
+    setMessages([...newMessages, { text: "❌ Error connecting to chatbot.", sender: "bot" }]);
+  } finally {
+    setIsTyping(false);
+  }
+};
 
-    try {
-      const response = await axios.post(
-        `${backendURL}/api/chatbot`,
-        { userMessage: message, session, language },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const botResponse = response.data.response || {};
-      const replyText = botResponse.message || botResponse.reply || 
-        (typeof botResponse === "string" ? botResponse : "🤖 Sorry, I didn't understand that.");
-
-      const botMessage = {
-        text: replyText,
-        sender: "bot",
-        options: botResponse.options || []
-      };
-
-      setMessages([...newMessages, botMessage]);
-      
-      if (botResponse.orderId && botResponse.amount) {
-        openRazorpayCheckout(botResponse);
-        setMessages(prev => {
-          const last = { ...prev[prev.length - 1], options: [] };
-          return [...prev.slice(0, -1), last];
-        });
-      }
-
-      setSession(response.data.session);
-    } catch (error) {
-      console.error("Chatbot error:", error);
-      setMessages([...newMessages, { text: "❌ Error connecting to chatbot.", sender: "bot" }]);
-    } finally {
-      setIsTyping(false);
-    }
-  };
 
   const openRazorpayCheckout = (paymentData) => {
     const options = {

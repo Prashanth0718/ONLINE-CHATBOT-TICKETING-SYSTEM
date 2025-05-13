@@ -61,13 +61,10 @@ const handlePaymentStep = async ({ userMessage, session, response }) => {
       museumId: museum._id,
     };
 
-    response.message = `🧾 *Order Created!*\n\nYou're booking *${numTickets}* ticket(s) for *${session.selectedMuseum}* on *${selectedDate}*.\n💵 *Total:* ₹${amount / 100}\n\nPlease complete your payment using Razorpay to confirm your booking.`;
-    response.orderId = order.id;
-    response.amount = order.amount;
-    response.currency = order.currency;
-    response.key = process.env.RAZORPAY_KEY_ID;
+   response.message = `🧾 *Order Created!*\n\nYou're booking *${numTickets}* ticket(s) for *${session.selectedMuseum}* on *${selectedDate}*.\n💵 *Total:* ₹${amount / 100}\n\nPlease complete your payment using Razorpay to confirm your booking.`;
+    response.options = ["Pay Now 💳"];
 
-    session.step = "verify_payment";
+    session.step = "main_menu";
   } catch (error) {
     console.error("❌ Razorpay Payment Error:", error);
     response.message = "⚠️ Failed to initiate payment. Please try again later.";
@@ -77,6 +74,5 @@ const handlePaymentStep = async ({ userMessage, session, response }) => {
 
   return { session, response };
 };
-
 
 module.exports = handlePaymentStep;
