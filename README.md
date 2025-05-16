@@ -172,9 +172,3 @@ and more...
 - Real-Time Chatbot Responses with Socket.io: Upgrade to real-time communication between user and chatbot using WebSockets.
 - Voice Input Integration: Add support for voice-to-text interaction with the chatbot, improving accessibility.
 
-
-
-
-
-## 🤝 Contributing
-Pull requests are welcome. Please submit issues or feature requests if you'd like to help improve this project.
